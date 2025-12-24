@@ -1,17 +1,13 @@
 plugins {
-    kotlin("jvm") version "2.2.21"
-    kotlin("plugin.spring") version "2.2.21"
-    id("org.springframework.boot") version "4.0.0"
-    id("io.spring.dependency-management") version "1.1.7"
+    alias(libs.plugins.kotlin)
+    alias(libs.plugins.kotlinSpring)
+    alias(libs.plugins.springBoot)
+    alias(libs.plugins.springDependencyManagement)
 }
-
-group = "com.night"
-version = "0.0.1-SNAPSHOT"
-description = "Demo project for Spring Boot"
 
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(21)
+        languageVersion = JavaLanguageVersion.of(providers.gradleProperty("javaVersion").get().toInt())
     }
 }
 

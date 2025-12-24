@@ -1,16 +1,12 @@
 plugins {
     id("java")
-    id("org.springframework.boot") version "4.0.0"
-    id("io.spring.dependency-management") version "1.1.7"
+    alias(libs.plugins.springBoot)
+    alias(libs.plugins.springDependencyManagement)
 }
-
-group = "com.night"
-version = "0.0.1-SNAPSHOT"
-description = "Demo project for Spring Boot"
 
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(21)
+        languageVersion = JavaLanguageVersion.of(providers.gradleProperty("javaVersion").get().toInt())
     }
 }
 
@@ -21,7 +17,7 @@ repositories {
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web")
     developmentOnly("org.springframework.boot:spring-boot-docker-compose")
-    testImplementation("org.springframework.boot:spring-boot-starter-web-test")
+    testImplementation("org.springframework.boot:spring-boot-starter-test")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 

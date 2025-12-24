@@ -2,10 +2,13 @@
 # Language & Build
 java = "21"
 kotlin = "2.2.21"
+kotlinPlugin = "2.2.21"
 
 # Spring Boot & Spring
 springBoot = "4.0.0"
+springBootPlugin = "4.0.0"
 springDependencyManagement = "1.1.7"
+springDependencyManagementPlugin = "1.1.7"
 spring-framework = "6.1.0"
 
 # Kotlin & Coroutines
@@ -143,9 +146,9 @@ testingKotlin = [
 ]
 
 [plugins]
-kotlin = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
-kotlinSpring = { id = "org.jetbrains.kotlin.plugin.spring", version.ref = "kotlin" }
-kotlinJpa = { id = "org.jetbrains.kotlin.plugin.jpa", version.ref = "kotlin" }
-springBoot = { id = "org.springframework.boot", version.ref = "springBoot" }
-springDependencyManagement = { id = "io.spring.dependency-management", version.ref = "springDependencyManagement" }
+kotlin = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlinPlugin" }
+kotlinSpring = { id = "org.jetbrains.kotlin.plugin.spring", version.ref = "kotlinPlugin" }
+kotlinJpa = { id = "org.jetbrains.kotlin.plugin.jpa", version.ref = "kotlinPlugin" }
+springBoot = { id = "org.springframework.boot", version.ref = "springBootPlugin" }
+springDependencyManagement = { id = "io.spring.dependency-management", version.ref = "springDependencyManagementPlugin" }
 
