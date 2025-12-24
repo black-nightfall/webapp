@@ -1,6 +1,5 @@
 [versions]
 # Language & Build
-java = "21"
 kotlin = "2.2.21"
 kotlinPlugin = "2.2.21"
 
@@ -118,6 +117,12 @@ kotlin = [
     "kotlinStdlib"
 ]
 
+# Kotlin + Spring Bundle (for Kotlin projects)
+kotlinSpring = [
+    "kotlinReflect",
+    "kotlinStdlib"
+]
+
 # Jackson Bundle
 jackson = [
     "jacksonDatabind",
@@ -125,7 +130,21 @@ jackson = [
     "jacksonJsr310"
 ]
 
-# Testing Bundle
+# Coroutines Bundle
+coroutines = [
+    "kotlinxCoroutines-core",
+    "kotlinxCoroutines-reactor",
+    "kotlinxCoroutines-slf4j"
+]
+
+# Reactor Bundle
+reactor = [
+    "reactorCore",
+    "reactorKotlinExtensions",
+    "kotlinxCoroutines-reactor"
+]
+
+# Testing Bundle - Common (JUnit)
 testingCommon = [
     "junit-jupiter-api",
     "junit-jupiter-engine",
@@ -133,16 +152,49 @@ testingCommon = [
     "junit-platform-launcher"
 ]
 
+# Testing Bundle - Spring Web
 testingSpringWeb = [
     "springBootStarterTest",
     "mockito-core",
     "mockito-junit-jupiter"
 ]
 
+# Testing Bundle - Kotlin
 testingKotlin = [
     "kotlinTest",
     "kotlinxCoroutines-test",
     "mockito-kotlin"
+]
+
+# Testing Bundle - Kotest (alternative)
+testingKotest = [
+    "kotest-runner-junit5",
+    "kotest-assertions-core",
+    "mockito-kotlin"
+]
+
+# Testing Bundle - Complete (for Web projects)
+testingSpringWebComplete = [
+    "springBootStarterTest",
+    "mockito-core",
+    "mockito-junit-jupiter",
+    "junit-jupiter-params"
+]
+
+# Testing Bundle - Complete (for Kotlin projects)
+testingKotlinComplete = [
+    "springBootStarterTest",
+    "kotlinTest",
+    "kotlinxCoroutines-test",
+    "mockito-kotlin",
+    "junit-jupiter-params"
+]
+
+# Database Bundle
+database = [
+    "liquibase-core",
+    "postgresql-driver",
+    "h2-driver"
 ]
 
 [plugins]

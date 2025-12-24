@@ -22,7 +22,6 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
 
-
     developmentOnly("org.springframework.boot:spring-boot-docker-compose")
 
     testImplementation("org.springframework.boot:spring-boot-starter-webflux-test")
@@ -40,3 +39,4 @@ kotlin {
 tasks.withType<Test> {
     useJUnitPlatform()
 }
+
