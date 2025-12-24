@@ -1,6 +1,44 @@
 spring:
   application:
     name: admin
+
+  # 数据库配置
+  datasource:
+    url: jdbc:postgresql://localhost:5432/appdb
+    username: appuser
+    password: changeme
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 5
+      connection-timeout: 30000
+
+  # JPA 配置
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+    open-in-view: false
+
+
+  # Redis 配置
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      password: changeme
+      database: 0
+      timeout: 3000ms
+      lettuce:
+        pool:
+          max-active: 8
+          max-idle: 8
+          min-idle: 2
+
   docker:
     compose:
       file: ./infra/docker/docker-compose.yml
@@ -9,3 +47,27 @@ server:
   port: 9090
   servlet:
     context-path: /admin
+
+# JWT 配置
+jwt:
+  secret: ${JWT_SECRET:your-very-long-secret-key-at-least-256-bits-for-hs256-algorithm-security}
+  expiration: 86400000 # 24 hours in milliseconds
+  header: Authorization
+  prefix: Bearer
+
+# 认证配置（用于初始数据）
+auth:
+  admin:
+    username: ${ADMIN_USERNAME:admin}
+    password: ${ADMIN_PASSWORD:admin123}
+
+# 日志配置
+logging:
+  level:
+    com.night.admin: DEBUG
+    org.springframework.web: INFO
+    org.springframework.security: DEBUG
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
