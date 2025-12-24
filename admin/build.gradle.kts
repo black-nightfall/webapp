@@ -15,10 +15,9 @@ repositories {
 }
 
 dependencies {
-    implementation("org.springframework.boot:spring-boot-starter-web")
-    developmentOnly("org.springframework.boot:spring-boot-docker-compose")
-    testImplementation("org.springframework.boot:spring-boot-starter-test")
-    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+    implementation(libs.bundles.springBootWeb)
+    developmentOnly(libs.springBootDockerCompose)
+    testImplementation(libs.bundles.testingSpringWebComplete)
 }
 
 tasks.withType<Test> {

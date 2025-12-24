@@ -16,18 +16,9 @@ repositories {
 }
 
 dependencies {
-    implementation("org.springframework.boot:spring-boot-starter-webflux")
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
-    implementation("io.projectreactor.kotlin:reactor-kotlin-extensions")
-    implementation("org.jetbrains.kotlin:kotlin-reflect")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
-
-    developmentOnly("org.springframework.boot:spring-boot-docker-compose")
-
-    testImplementation("org.springframework.boot:spring-boot-starter-webflux-test")
-    testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
-    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test")
-    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+    implementation(libs.bundles.springBootWebflux)
+    implementation(libs.bundles.jackson)
+    testImplementation(libs.bundles.testingKotlinComplete)
 }
 
 kotlin {
