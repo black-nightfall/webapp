@@ -1,6 +1,5 @@
 plugins {
-    id("java")
-    alias(libs.plugins.springBoot)
+    alias(libs.plugins.kotlin)
     alias(libs.plugins.springDependencyManagement)
 }
 
@@ -15,10 +14,12 @@ repositories {
 }
 
 dependencies {
-    implementation(project(":common"))
-    implementation(libs.bundles.springBootWeb)
-    developmentOnly(libs.springBootDockerCompose)
-    testImplementation(libs.bundles.testingSpringWebComplete)
+    // Core dependencies
+    implementation(libs.bundles.kotlin)
+    implementation(libs.springBootStarterLogging)
+
+    // Testing
+    testImplementation(libs.bundles.testingKotlinComplete)
 }
 
 tasks.withType<Test> {

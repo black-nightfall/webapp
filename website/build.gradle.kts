@@ -16,6 +16,7 @@ repositories {
 }
 
 dependencies {
+    implementation(project(":common"))
     implementation(libs.bundles.springBootWebflux)
     implementation(libs.bundles.jackson)
     testImplementation(libs.bundles.testingKotlinComplete)
