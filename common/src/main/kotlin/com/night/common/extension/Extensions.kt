@@ -1,6 +1,7 @@
 package com.night.common.extension
 
 import com.night.common.dto.ApiResponse
+import com.night.common.dto.ErrorCode
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
@@ -31,6 +32,6 @@ fun <T : Any> T.toSuccessResponse(message: String = "success"): ApiResponse<T> {
 }
 
 fun <T> String.toErrorResponse(): ApiResponse<T> {
-    return ApiResponse.error(this)
+    return ApiResponse.error(ErrorCode.BAD_REQUEST,this)
 }
 

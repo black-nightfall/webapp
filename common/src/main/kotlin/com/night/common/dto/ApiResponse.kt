@@ -1,10 +1,11 @@
 package com.night.common.dto
 
 import java.time.LocalDateTime
+import javax.xml.crypto.Data
 
 data class ApiResponse<T>(
     val success: Boolean,
-    val code: String,
+    val code: ErrorCode,
     val message: String,
     val data: T?,
     val timestamp: LocalDateTime = LocalDateTime.now()
@@ -14,7 +15,7 @@ data class ApiResponse<T>(
         fun <T> success(data: T, message: String = "success"): ApiResponse<T> {
             return ApiResponse(
                 success = true,
-                code = "0",
+                code = ErrorCode.SUCCESS,
                 message = message,
                 data = data
             )
@@ -24,12 +25,16 @@ data class ApiResponse<T>(
         fun <T> success(data: T): ApiResponse<T> {
             return success(data, "success")
         }
+        @JvmStatic
+        fun <T> success(): ApiResponse<T> {
+            return success("success")
+        }
 
         @JvmStatic
         fun <T> success(message: String = "success"): ApiResponse<T> {
             return ApiResponse(
                 success = true,
-                code = "0",
+                code = ErrorCode.SUCCESS,
                 message = message,
                 data = null
             )
@@ -39,14 +44,14 @@ data class ApiResponse<T>(
         fun <T> error(code: String, message: String, data: T? = null): ApiResponse<T> {
             return ApiResponse(
                 success = false,
-                code = code,
+                code = ErrorCode.SUCCESS,
                 message = message,
                 data = data
             )
         }
 
         @JvmStatic
-        fun <T> error(code: String, message: String): ApiResponse<T> {
+        fun <T> error(code: ErrorCode, message: String): ApiResponse<T> {
             return ApiResponse(
                 success = false,
                 code = code,
@@ -56,12 +61,21 @@ data class ApiResponse<T>(
         }
 
         @JvmStatic
-        fun <T> error(message: String): ApiResponse<T> {
+        fun <T> error(code: ErrorCode): ApiResponse<T> {
             return ApiResponse(
                 success = false,
-                code = "-1",
-                message = message,
+                code = code,
+                message = code.message,
                 data = null
+            )
+        }
+        @JvmStatic
+        fun <T> error(data: T): ApiResponse<T> {
+            return ApiResponse(
+                success = false,
+                code = ErrorCode.BAD_REQUEST,
+                message = ErrorCode.BAD_REQUEST.message,
+                data = data
             )
         }
     }
