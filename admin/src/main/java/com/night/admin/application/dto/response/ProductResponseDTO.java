@@ -1,4 +1,4 @@
-package com.night.admin.domain.entity;
+package com.night.admin.application.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Product {
+public class ProductResponseDTO {
     private Long id;
     private String name;
     private String description;

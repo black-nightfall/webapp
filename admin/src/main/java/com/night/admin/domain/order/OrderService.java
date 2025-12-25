@@ -1,56 +1,76 @@
-package com.night.admin.domain.order;
+package com.night.admin.domain.service;
 
-
+import com.night.admin.infrastructure.persistence.repository.OrderRepository;
+import com.night.admin.domain.entity.Order;
 import com.night.admin.exception.BusinessException;
-import com.night.admin.domain.order.dto.OrderDTO;
-import com.night.admin.domain.product.ProductService;
-import com.night.admin.domain.user.UserService;
 import com.night.common.dto.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 @Service
 @Slf4j
 @RequiredArgsConstructor
 public class OrderService {
     
-    private final UserService userService;
-    private final ProductService productService;
+    private final OrderRepository orderRepository;
     
-    public OrderDTO createOrder(Long userId, Long productId) {
-        log.info("Creating order for userId: {}, productId: {}", userId, productId);
+    public Order createOrder(Order order) {
+        log.info("Creating order for userId: {}", order.getUserId());
         
         try {
-            // 验证用户存在
-            userService.getUser(userId);
+            // 保存订单到数据库
+            com.night.admin.infrastructure.persistence.entity.OrderEntity entity = new com.night.admin.infrastructure.persistence.entity.OrderEntity();
+            entity.setOrderNumber(order.getOrderNumber());
+            entity.setUserId(order.getUserId());
+            entity.setTotalAmount(order.getTotalAmount());
+            entity.setStatus(order.getStatus());
+            entity.setShippingAddress(order.getShippingAddress());
             
-            // 验证产品存在
-            productService.getProduct(productId);
+            com.night.admin.infrastructure.persistence.entity.OrderEntity savedEntity = orderRepository.save(entity);
             
-            // 创建订单（实际应该保存到数据库）
-            Order order = Order.builder()
-                    .id(System.currentTimeMillis())  // Mock ID
-                    .userId(userId)
-                    .productId(productId)
-                    .status("CREATED")
-                    .build();
+            // 转换回领域实体
+            Order result = new Order();
+            result.setId(savedEntity.getId());
+            result.setOrderNumber(savedEntity.getOrderNumber());
+            result.setUserId(savedEntity.getUserId());
+            result.setTotalAmount(savedEntity.getTotalAmount());
+            result.setStatus(savedEntity.getStatus());
+            result.setShippingAddress(savedEntity.getShippingAddress());
+            result.setCreatedAt(savedEntity.getCreatedAt());
+            result.setUpdatedAt(savedEntity.getUpdatedAt());
             
-            log.info("Order created successfully with id: {}", order.getId());
-            return convertToDTO(order);
+            log.info("Order created successfully with id: {}", result.getId());
+            return result;
             
-        } catch (BusinessException e) {
-            log.error("Failed to create order: {}", e.getMessage());
-            throw new BusinessException(ErrorCode.ORDER_CREATION_FAILED, e.getMessage());
+        } catch (Exception e) {
+            log.error("Failed to create order: {}", e.getMessage(), e);
+            throw new BusinessException(ErrorCode.ORDER_CREATION_FAILED, "订单创建失败");
         }
     }
     
-    private OrderDTO convertToDTO(Order order) {
-        return OrderDTO.builder()
-                .id(order.getId())
-                .userId(order.getUserId())
-                .productId(order.getProductId())
-                .status(order.getStatus())
-                .build();
+    public Order getOrderById(Long id) {
+        log.info("Fetching order with id: {}", id);
+        
+        Optional<com.night.admin.infrastructure.persistence.entity.OrderEntity> optional = orderRepository.findById(id);
+        
+        if (optional.isPresent()) {
+            com.night.admin.infrastructure.persistence.entity.OrderEntity entity = optional.get();
+            Order order = new Order();
+            order.setId(entity.getId());
+            order.setOrderNumber(entity.getOrderNumber());
+            order.setUserId(entity.getUserId());
+            order.setTotalAmount(entity.getTotalAmount());
+            order.setStatus(entity.getStatus());
+            order.setShippingAddress(entity.getShippingAddress());
+            order.setCreatedAt(entity.getCreatedAt());
+            order.setUpdatedAt(entity.getUpdatedAt());
+            
+            return order;
+        } else {
+            throw new BusinessException(ErrorCode.ORDER_NOT_FOUND, "订单不存在");
+        }
     }
 }

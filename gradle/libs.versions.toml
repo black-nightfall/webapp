@@ -94,7 +94,31 @@ mockito-core = { group = "org.mockito", name = "mockito-core", version.ref = "mo
 mockito-junit-jupiter = { group = "org.mockito", name = "mockito-junit-jupiter", version.ref = "mockito" }
 mockito-kotlin = { group = "org.mockito.kotlin", name = "mockito-kotlin", version = "5.1.0" }
 
+# JWT
+jjwt-api = { group = "io.jsonwebtoken", name = "jjwt-api", version = "0.12.6" }
+jjwt-impl = { group = "io.jsonwebtoken", name = "jjwt-impl", version = "0.12.6" }
+jjwt-jackson = { group = "io.jsonwebtoken", name = "jjwt-jackson", version = "0.12.6" }
+
+# Lombok
+lombok = { group = "org.projectlombok", name = "lombok", version = "1.18.36" }
+
+# Spring Data JPA
+spring-data-jpa = { group = "org.springframework.boot", name = "spring-boot-starter-data-jpa", version.ref = "springBoot" }
+
+# Spring Data Redis
+spring-data-redis = { group = "org.springframework.boot", name = "spring-boot-starter-data-redis", version.ref = "springBoot" }
+
+# Spring Security
+spring-security-test = { group = "org.springframework.security", name = "spring-security-test", version = "6.2.0" }
+
 [bundles]
+# JWT Bundle
+jwt = [
+    "jjwt-api",
+    "jjwt-impl",
+    "jjwt-jackson"
+]
+
 # Spring Boot Web Bundle
 springBootWeb = [
     "springBootStarterWeb",

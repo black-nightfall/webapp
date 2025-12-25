@@ -1,11 +1,10 @@
-package com.night.admin.domain.auth;
+package com.night.admin.domain.service;
 
-import com.night.admin.domain.auth.dto.LoginResponse;
+import com.night.admin.infrastructure.persistence.repository.UserRepository;
+import com.night.admin.domain.entity.User;
 import com.night.admin.domain.auth.service.TokenSessionService;
 import com.night.admin.exception.BusinessException;
 import com.night.admin.util.JwtUtil;
-import com.night.admin.domain.user.User;
-import com.night.admin.domain.user.UserRepository;
 import com.night.common.dto.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -14,6 +13,8 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 @Service
 @Slf4j
@@ -25,7 +26,7 @@ public class AuthService {
     private final TokenSessionService tokenSessionService;
     private final UserRepository userRepository;
 
-    public LoginResponse login(String username, String password) {
+    public com.night.admin.domain.entity.LoginResponse login(String username, String password) {
         log.info("Login attempt for username: {}", username);
         
         try {
@@ -33,10 +34,11 @@ public class AuthService {
                     new UsernamePasswordAuthenticationToken(username, password)
             );
             
-            User user = userRepository.findByUsername(username)
+            com.night.admin.infrastructure.persistence.entity.UserEntity userEntity = 
+                userRepository.findByUsername(username)
                     .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
             
-            if (!user.getIsActive()) {
+            if (!userEntity.getIsActive()) {
                 throw new BusinessException(ErrorCode.USER_DISABLED);
             }
             
@@ -46,10 +48,12 @@ public class AuthService {
             
             log.info("User logged in successfully: {}", username);
             
-            return LoginResponse.builder()
-                    .token(token)
-                    .username(username)
-                    .build();
+            com.night.admin.domain.entity.LoginResponse response = new com.night.admin.domain.entity.LoginResponse();
+            response.setToken(token);
+            response.setUsername(username);
+            response.setUserId(userEntity.getId());
+            
+            return response;
                     
         } catch (AuthenticationException e) {
             log.warn("Invalid login attempt for username: {}", username);

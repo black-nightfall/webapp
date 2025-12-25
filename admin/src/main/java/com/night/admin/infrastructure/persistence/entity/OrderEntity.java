@@ -1,4 +1,4 @@
-package com.night.admin.domain.user;
+package com.night.admin.infrastructure.persistence.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -6,41 +6,37 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 @Entity
-@Table(name = "user_info")
+@Table(name = "orders")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @EntityListeners(AuditingEntityListener.class)
-public class User {
+public class OrderEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(insertable = false, updatable = false)
-    private UUID uid;
+    @Column(name = "order_number", unique = true)
+    private String orderNumber;
 
-    @Column(unique = true, nullable = false, length = 100)
-    private String username;
+    @Column(name = "user_id", nullable = false)
+    private Long userId;
 
-    @Column(name = "password_hash", nullable = false)
-    private String password;
+    @Column(name = "total_amount", precision = 10, scale = 2)
+    private BigDecimal totalAmount;
 
-    @Column(unique = true, nullable = false, length = 255)
-    private String email;
+    @Column(name = "status", nullable = false)
+    private String status;
 
-    @Column(name = "full_name")
-    private String fullName;
-
-    @Builder.Default
-    @Column(name = "is_active", nullable = false)
-    private Boolean isActive = true;
+    @Column(name = "shipping_address")
+    private String shippingAddress;
 
     @CreatedDate
     @Column(name = "created_at", nullable = false, updatable = false)

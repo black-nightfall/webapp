@@ -1,25 +1,26 @@
-package com.night.admin.domain.entity;
+package com.night.admin.application.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
+/**
+ * 用户响应 DTO
+ */
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Product {
+public class UserResponseDTO {
     private Long id;
-    private String name;
-    private String description;
-    private BigDecimal price;
-    private Integer stock;
-    private String category;
-    private String imageUrl;
+    private UUID uid;
+    private String username;
+    private String email;
+    private String fullName;
     private Boolean isActive;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;

@@ -1,4 +1,4 @@
-package com.night.admin.domain.user.dto;
+package com.night.admin.application.dto.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -6,14 +6,14 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * 用户响应 DTO
+ * 创建用户请求 DTO
  */
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserDTO {
-    private Long id;
-    private String name;
+public class CreateUserRequestDTO {
+    private String username;
     private String email;
+    private String password;
 }

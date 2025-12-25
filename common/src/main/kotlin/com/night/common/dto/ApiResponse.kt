@@ -1,7 +1,7 @@
 package com.night.common.dto
 
 import java.time.LocalDateTime
-import javax.xml.crypto.Data
+
 
 data class ApiResponse<T>(
     val success: Boolean,
@@ -41,10 +41,10 @@ data class ApiResponse<T>(
         }
 
         @JvmStatic
-        fun <T> error(code: String, message: String, data: T? = null): ApiResponse<T> {
+        fun <T> error(code: Int, message: String, data: T? = null): ApiResponse<T> {
             return ApiResponse(
                 success = false,
-                code = ErrorCode.SUCCESS,
+                code = ErrorCode.fromCode(code) ?: ErrorCode.INTERNAL_SERVER_ERROR,
                 message = message,
                 data = data
             )

@@ -25,4 +25,20 @@ enum class ErrorCode(val code: Int, val message: String) {
     ORDER_CREATION_FAILED(4002, "Failed to create order"),
     INVALID_ORDER_STATUS(4003, "Invalid order status");
 
+    companion object {
+        @JvmStatic
+        fun fromCode(code: Int): ErrorCode? {
+            return values().firstOrNull { it.code == code }
+        }
+        
+        @JvmStatic
+        fun fromCode(code: String): ErrorCode? {
+            return try {
+                val codeInt = code.toInt()
+                fromCode(codeInt)
+            } catch (e: NumberFormatException) {
+                null
+            }
+        }
+    }
 }

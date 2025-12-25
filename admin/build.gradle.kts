@@ -18,31 +18,29 @@ dependencies {
     implementation(libs.bundles.springBootWeb)
     
     // JPA & Database
-    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+    implementation(libs.spring.data.jpa)
     runtimeOnly(libs.postgresql.driver)
     
     // Redis
-    implementation("org.springframework.boot:spring-boot-starter-data-redis")
+    implementation(libs.spring.data.redis)
     
     // Security & JWT
     implementation("org.springframework.boot:spring-boot-starter-security")
-    implementation("io.jsonwebtoken:jjwt-api:0.12.6")
-    runtimeOnly("io.jsonwebtoken:jjwt-impl:0.12.6")
-    runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.12.6")
+    implementation(libs.bundles.jwt)
     
     // Lombok
-    compileOnly("org.projectlombok:lombok:1.18.36")
-    annotationProcessor("org.projectlombok:lombok:1.18.36")
+    compileOnly(libs.lombok)
+    annotationProcessor(libs.lombok)
     
     // Validation
-    implementation("org.springframework.boot:spring-boot-starter-validation")
+    implementation(libs.springBootStarterValidation)
     
     // Development
     developmentOnly(libs.springBootDockerCompose)
     
     // Testing
     testImplementation(libs.bundles.testingSpringWebComplete)
-    testImplementation("org.springframework.security:spring-security-test")
+    testImplementation(libs.spring.security.test)
 }
 
 tasks.withType<Test> {
