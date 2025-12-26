@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Layout, Menu, theme, Button } from 'antd';
+import { Layout, Menu, theme } from 'antd';
 import {
     UserOutlined,
     ShoppingOutlined,
@@ -7,6 +7,7 @@ import {
     OrderedListOutlined,
 } from '@ant-design/icons';
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
+import UserDropdown from '../components/UserDropdown';
 
 const { Header, Content, Footer, Sider } = Layout;
 
@@ -60,14 +61,10 @@ const AppLayout: React.FC = () => {
                     background: colorBgContainer,
                     display: 'flex',
                     justifyContent: 'flex-end',
-                    alignItems: 'center'
+                    alignItems: 'center',
+                    boxShadow: '0 1px 4px rgba(0,21,41,.08)'
                 }}>
-                    <Button type="text" onClick={() => {
-                        localStorage.removeItem('user');
-                        window.location.href = '/login';
-                    }}>
-                        Logout
-                    </Button>
+                    <UserDropdown />
                 </Header>
                 <Content style={{ margin: '0 16px' }}>
                     <div

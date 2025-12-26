@@ -1,4 +1,5 @@
 import axios, { type AxiosError, type InternalAxiosRequestConfig, type AxiosInstance } from 'axios';
+import { mockApi } from '../mocks/api';
 
 // Create a custom API client interface that returns unwrapped data
 interface ApiClient extends Omit<AxiosInstance, 'get' | 'post' | 'put' | 'delete' | 'patch'> {
@@ -9,6 +10,102 @@ interface ApiClient extends Omit<AxiosInstance, 'get' | 'post' | 'put' | 'delete
     patch<T = unknown>(url: string, data?: unknown, config?: Parameters<AxiosInstance['patch']>[2]): Promise<T>;
 }
 
+// 环境配置
+const API_MODE = import.meta.env.VITE_API_MODE || 'real';
+const isMockMode = API_MODE === 'mock';
+
+console.log('🔧 API Mode:', API_MODE);
+console.log('🌐 API Base URL:', import.meta.env.VITE_API_BASE_URL);
+
+// ==================== Mock API Handler ====================
+const mockApiHandler = {
+    async get<T>(url: string): Promise<T> {
+        console.log('📦 Mock GET:', url);
+
+        // Auth
+        if (url.includes('/auth/logout')) {
+            return mockApi.auth.logout() as Promise<T>;
+        }
+
+        // Users
+        if (url.match(/\/users\/\d+$/)) {
+            const id = parseInt(url.split('/').pop() || '0');
+            return mockApi.user.getUserById(id) as Promise<T>;
+        }
+        if (url.includes('/users/search')) {
+            // 解析查询参数（简化版）
+            const params = {};
+            return mockApi.user.searchUsers(params) as Promise<T>;
+        }
+        if (url === '/users') {
+            return mockApi.user.getUsers() as Promise<T>;
+        }
+
+        // Products
+        if (url.match(/\/products\/\d+$/)) {
+            const id = parseInt(url.split('/').pop() || '0');
+            return mockApi.product.getProductById(id) as Promise<T>;
+        }
+        if (url === '/products') {
+            return mockApi.product.getProducts() as Promise<T>;
+        }
+
+        // Orders
+        if (url.match(/\/orders\/\d+$/)) {
+            const id = parseInt(url.split('/').pop() || '0');
+            return mockApi.order.getOrderById(id) as Promise<T>;
+        }
+        if (url === '/orders') {
+            return mockApi.order.getOrders() as Promise<T>;
+        }
+
+        throw new Error(`Mock API not implemented for GET ${url}`);
+    },
+
+    async post<T>(url: string, data?: unknown): Promise<T> {
+        console.log('📦 Mock POST:', url, data);
+
+        // Auth
+        if (url.includes('/auth/login')) {
+            const { username, password } = data as { username: string; password: string };
+            return mockApi.auth.login(username, password) as Promise<T>;
+        }
+
+        // Users
+        if (url === '/users') {
+            return mockApi.user.createUser(data as any) as Promise<T>;
+        }
+
+        // Products
+        if (url === '/products') {
+            return mockApi.product.createProduct(data as any) as Promise<T>;
+        }
+
+        // Orders
+        if (url === '/orders') {
+            return mockApi.order.createOrder(data as any) as Promise<T>;
+        }
+
+        throw new Error(`Mock API not implemented for POST ${url}`);
+    },
+
+    async put<T>(url: string, data?: unknown): Promise<T> {
+        console.log('📦 Mock PUT:', url, data);
+        throw new Error(`Mock API not implemented for PUT ${url}`);
+    },
+
+    async delete<T>(url: string): Promise<T> {
+        console.log('📦 Mock DELETE:', url);
+        throw new Error(`Mock API not implemented for DELETE ${url}`);
+    },
+
+    async patch<T>(url: string, data?: unknown): Promise<T> {
+        console.log('📦 Mock PATCH:', url, data);
+        throw new Error(`Mock API not implemented for PATCH ${url}`);
+    },
+};
+
+// ==================== Real API Instance ====================
 const axiosInstance = axios.create({
     baseURL: import.meta.env.VITE_API_BASE_URL || '/api',
     timeout: 30000,
@@ -57,7 +154,17 @@ axiosInstance.interceptors.response.use(
     }
 );
 
-// Cast to our custom type that reflects the interceptor unwrapping
-const api = axiosInstance as ApiClient;
+// ==================== API Client (支持Mock切换) ====================
+const createApiClient = (): ApiClient => {
+    if (isMockMode) {
+        console.log('✅ Using Mock API');
+        return mockApiHandler as unknown as ApiClient;
+    } else {
+        console.log('✅ Using Real API');
+        return axiosInstance as ApiClient;
+    }
+};
+
+const api = createApiClient();
 
 export default api;
