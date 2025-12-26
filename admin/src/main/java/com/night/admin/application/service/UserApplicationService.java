@@ -6,6 +6,7 @@ import com.night.admin.domain.user.repository.UserRepository;
 import com.night.admin.domain.user.specification.UserSpecification;
 import com.night.admin.application.dto.response.UserResponseDTO;
 import com.night.admin.application.dto.request.CreateUserRequestDTO;
+import com.night.admin.application.dto.request.UpdateUserRequestDTO;
 import com.night.admin.application.dto.request.SearchUserRequestDTO;
 import com.night.admin.application.mapper.UserMapper;
 import lombok.RequiredArgsConstructor;
@@ -42,6 +43,39 @@ public class UserApplicationService {
         User user = userMapper.toDomain(request);
         User savedUser = userService.save(user);
         return userMapper.toResponseDTO(savedUser);
+    }
+    
+    /**
+     * 更新用户
+     * 
+     * @param id 用户ID
+     * @param request 更新请求（所有字段均为可选）
+     * @return 更新后的用户响应DTO
+     */
+    @Transactional
+    public UserResponseDTO updateUser(Long id, UpdateUserRequestDTO request) {
+        log.info("更新用户: userId={}, request={}", id, request);
+        
+        // 将 DTO 转换为 Domain 对象
+        User updateData = userMapper.toDomain(request);
+        
+        // 调用领域服务执行更新逻辑
+        User updatedUser = userService.updateUser(id, updateData);
+        
+        // 转换为 ResponseDTO 返回
+        return userMapper.toResponseDTO(updatedUser);
+    }
+    
+    /**
+     * 删除用户
+     * 
+     * @param id 用户ID
+     */
+    @Transactional
+    public void deleteUser(Long id) {
+        log.info("删除用户: userId={}", id);
+        userService.deleteUser(id);
+        log.info("用户删除成功: userId={}", id);
     }
     
     /**

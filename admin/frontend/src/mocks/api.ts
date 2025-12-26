@@ -60,7 +60,7 @@ export const mockUserApi = {
     async createUser(userData: Partial<MockUser>) {
         await delay();
         const newUser: MockUser = {
-            id: mockUsers.length + 1,
+            id: Math.max(...mockUsers.map(u => u.id), 0) + 1,
             uid: `${Date.now()}-mock-uid`,
             username: userData.username || 'new_user',
             email: userData.email || 'user@example.com',
@@ -73,7 +73,47 @@ export const mockUserApi = {
         return createSuccessResponse(newUser, '创建成功');
     },
 
-    async searchUsers(params: { username?: string; email?: string; isActive?: boolean; page?: number; size?: number }) {
+    async updateUser(id: number, userData: Partial<MockUser>) {
+        await delay();
+        const index = mockUsers.findIndex(u => u.id === id);
+        if (index === -1) {
+            throw new Error('用户不存在');
+        }
+
+        // 更新用户数据
+        const existingUser = mockUsers[index];
+        mockUsers[index] = {
+            ...existingUser,
+            ...userData,
+            id: existingUser.id, // ID不可变
+            uid: existingUser.uid, // UID不可变
+            createdAt: existingUser.createdAt, // 创建时间不可变
+            updatedAt: new Date().toISOString(),
+        };
+
+        return createSuccessResponse(mockUsers[index], '更新成功');
+    },
+
+    async deleteUser(id: number) {
+        await delay();
+        const index = mockUsers.findIndex(u => u.id === id);
+        if (index === -1) {
+            throw new Error('用户不存在');
+        }
+
+        mockUsers.splice(index, 1);
+        return createSuccessResponse(null, '删除成功');
+    },
+
+    async searchUsers(params: {
+        username?: string;
+        email?: string;
+        isActive?: boolean;
+        page?: number;
+        size?: number;
+        sortBy?: string;
+        sortDirection?: 'asc' | 'desc';
+    }) {
         await delay();
 
         let filtered = [...mockUsers];
@@ -88,6 +128,18 @@ export const mockUserApi = {
         if (params.isActive !== undefined) {
             filtered = filtered.filter(u => u.isActive === params.isActive);
         }
+
+        // 排序
+        const sortBy = params.sortBy || 'createdAt';
+        const sortDirection = params.sortDirection || 'desc';
+        filtered.sort((a, b) => {
+            const aValue = (a as any)[sortBy];
+            const bValue = (b as any)[sortBy];
+
+            if (aValue < bValue) return sortDirection === 'asc' ? -1 : 1;
+            if (aValue > bValue) return sortDirection === 'asc' ? 1 : -1;
+            return 0;
+        });
 
         // 分页
         const page = params.page || 0;
@@ -104,9 +156,11 @@ export const mockUserApi = {
             number: page,
             first: page === 0,
             last: end >= filtered.length,
+            empty: paginatedData.length === 0,
         }, '查询成功');
     },
 };
+
 
 // ==================== Product API ====================
 export const mockProductApi = {
@@ -138,7 +192,38 @@ export const mockProductApi = {
         mockProducts.push(newProduct);
         return createSuccessResponse(newProduct, '创建成功');
     },
+
+    async updateProduct(id: number, productData: Partial<MockProduct>) {
+        await delay();
+        const index = mockProducts.findIndex(p => p.id === id);
+        if (index === -1) {
+            throw new Error('商品不存在');
+        }
+
+        const existingProduct = mockProducts[index];
+        mockProducts[index] = {
+            ...existingProduct,
+            ...productData,
+            id: existingProduct.id,
+            createdAt: existingProduct.createdAt,
+            updatedAt: new Date().toISOString(),
+        };
+
+        return createSuccessResponse(mockProducts[index], '更新成功');
+    },
+
+    async deleteProduct(id: number) {
+        await delay();
+        const index = mockProducts.findIndex(p => p.id === id);
+        if (index === -1) {
+            throw new Error('商品不存在');
+        }
+
+        mockProducts.splice(index, 1);
+        return createSuccessResponse(null, '删除成功');
+    },
 };
+
 
 // ==================== Order API ====================
 export const mockOrderApi = {

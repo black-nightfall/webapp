@@ -19,8 +19,8 @@ console.log('🌐 API Base URL:', import.meta.env.VITE_API_BASE_URL);
 
 // ==================== Mock API Handler ====================
 const mockApiHandler = {
-    async get<T>(url: string): Promise<T> {
-        console.log('📦 Mock GET:', url);
+    async get<T>(url: string, config?: any): Promise<T> {
+        console.log('📦 Mock GET:', url, config?.params);
 
         // Auth
         if (url.includes('/auth/logout')) {
@@ -33,8 +33,8 @@ const mockApiHandler = {
             return mockApi.user.getUserById(id) as Promise<T>;
         }
         if (url.includes('/users/search')) {
-            // 解析查询参数（简化版）
-            const params = {};
+            // 从 config.params 获取查询参数
+            const params = config?.params || {};
             return mockApi.user.searchUsers(params) as Promise<T>;
         }
         if (url === '/users') {
@@ -91,11 +91,37 @@ const mockApiHandler = {
 
     async put<T>(url: string, data?: unknown): Promise<T> {
         console.log('📦 Mock PUT:', url, data);
+
+        // Users
+        if (url.match(/\/users\/\d+$/)) {
+            const id = parseInt(url.split('/').pop() || '0');
+            return mockApi.user.updateUser(id, data as any) as Promise<T>;
+        }
+
+        // Products
+        if (url.match(/\/products\/\d+$/)) {
+            const id = parseInt(url.split('/').pop() || '0');
+            return mockApi.product.updateProduct(id, data as any) as Promise<T>;
+        }
+
         throw new Error(`Mock API not implemented for PUT ${url}`);
     },
 
     async delete<T>(url: string): Promise<T> {
         console.log('📦 Mock DELETE:', url);
+
+        // Users
+        if (url.match(/\/users\/\d+$/)) {
+            const id = parseInt(url.split('/').pop() || '0');
+            return mockApi.user.deleteUser(id) as Promise<T>;
+        }
+
+        // Products
+        if (url.match(/\/products\/\d+$/)) {
+            const id = parseInt(url.split('/').pop() || '0');
+            return mockApi.product.deleteProduct(id) as Promise<T>;
+        }
+
         throw new Error(`Mock API not implemented for DELETE ${url}`);
     },
 

@@ -3,6 +3,7 @@ package com.night.admin.application.mapper;
 import com.night.admin.domain.user.entity.User;
 import com.night.admin.application.dto.response.UserResponseDTO;
 import com.night.admin.application.dto.request.CreateUserRequestDTO;
+import com.night.admin.application.dto.request.UpdateUserRequestDTO;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -32,6 +33,19 @@ public class UserMapper {
         user.setUsername(request.getUsername());
         user.setEmail(request.getEmail());
         user.setPassword(request.getPassword());
+        return user;
+    }
+    
+    public User toDomain(UpdateUserRequestDTO request) {
+        if (request == null) {
+            return null;
+        }
+        User user = new User();
+        user.setUsername(request.getUsername());
+        user.setEmail(request.getEmail());
+        user.setPassword(request.getPassword());
+        user.setFullName(request.getFullName());
+        user.setIsActive(request.getIsActive());
         return user;
     }
 }
