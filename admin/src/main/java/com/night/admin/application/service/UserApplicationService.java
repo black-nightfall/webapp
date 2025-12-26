@@ -1,7 +1,7 @@
 package com.night.admin.application.service;
 
-import com.night.admin.domain.service.UserDomainService;
-import com.night.admin.domain.entity.User;
+import com.night.admin.domain.user.UserDomainService;
+import com.night.admin.domain.user.entity.User;
 import com.night.admin.application.dto.response.UserResponseDTO;
 import com.night.admin.application.dto.request.CreateUserRequestDTO;
 import com.night.admin.application.mapper.UserMapper;

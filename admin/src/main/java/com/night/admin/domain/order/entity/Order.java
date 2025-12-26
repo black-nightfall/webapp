@@ -1,4 +1,4 @@
-package com.night.admin.domain.entity;
+package com.night.admin.domain.order.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -12,15 +12,13 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Product {
+public class Order {
     private Long id;
-    private String name;
-    private String description;
-    private BigDecimal price;
-    private Integer stock;
-    private String category;
-    private String imageUrl;
-    private Boolean isActive;
+    private String orderNumber;
+    private Long userId;
+    private BigDecimal totalAmount;
+    private String status;
+    private String shippingAddress;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }

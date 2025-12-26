@@ -1,7 +1,7 @@
 package com.night.admin.domain.service;
 
 import com.night.admin.infrastructure.persistence.repository.OrderRepository;
-import com.night.admin.domain.entity.Order;
+import com.night.admin.domain.order.entity.Order;
 import com.night.admin.exception.BusinessException;
 import com.night.common.dto.ErrorCode;
 import lombok.RequiredArgsConstructor;

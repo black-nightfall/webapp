@@ -1,6 +1,6 @@
 package com.night.admin.application.service;
 
-import com.night.admin.domain.service.AuthService;
+import com.night.admin.domain.auth.AuthService;
 import com.night.admin.application.dto.request.LoginRequest;
 import com.night.admin.application.dto.response.LoginResponse;
 import com.night.admin.application.mapper.AuthMapper;
@@ -18,7 +18,7 @@ public class AuthApplicationService {
     
     public LoginResponse login(LoginRequest request) {
         // 调用领域服务进行认证
-        com.night.admin.domain.entity.LoginResponse domainResponse = 
+        com.night.admin.domain.auth.AuthService.LoginResult domainResponse = 
             authDomainService.login(request.getUsername(), request.getPassword());
         return authMapper.toLoginResponse(domainResponse);
     }

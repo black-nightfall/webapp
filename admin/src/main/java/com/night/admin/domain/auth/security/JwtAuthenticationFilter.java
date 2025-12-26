@@ -1,6 +1,6 @@
 package com.night.admin.domain.auth.security;
 
-import com.night.admin.domain.auth.service.TokenSessionService;
+import com.night.admin.domain.auth.TokenSessionService;
 import com.night.admin.util.JwtUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

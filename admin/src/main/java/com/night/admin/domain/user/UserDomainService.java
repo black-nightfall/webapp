@@ -1,6 +1,6 @@
-package com.night.admin.domain.service;
+package com.night.admin.domain.user;
 
-import com.night.admin.domain.entity.User;
+import com.night.admin.domain.user.entity.User;
 import com.night.admin.infrastructure.persistence.entity.UserEntity;
 import com.night.admin.infrastructure.persistence.repository.UserRepository;
 import com.night.admin.application.mapper.UserMapper;

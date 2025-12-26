@@ -1,6 +1,6 @@
 package com.night.admin.application.mapper;
 
-import com.night.admin.domain.entity.User;
+import com.night.admin.domain.user.entity.User;
 import com.night.admin.application.dto.response.UserResponseDTO;
 import com.night.admin.application.dto.request.CreateUserRequestDTO;
 import org.springframework.stereotype.Component;

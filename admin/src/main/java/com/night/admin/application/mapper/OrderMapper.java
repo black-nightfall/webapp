@@ -1,6 +1,6 @@
 package com.night.admin.application.mapper;
 
-import com.night.admin.domain.entity.Order;
+import com.night.admin.domain.order.entity.Order;
 import com.night.admin.application.dto.response.OrderResponseDTO;
 import com.night.admin.application.dto.request.CreateOrderRequest;
 import org.springframework.stereotype.Component;

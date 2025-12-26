@@ -1,11 +1,13 @@
-package com.night.admin.domain.service;
+package com.night.admin.domain.auth;
 
 import com.night.admin.infrastructure.persistence.repository.UserRepository;
-import com.night.admin.domain.entity.User;
-import com.night.admin.domain.auth.service.TokenSessionService;
+import com.night.admin.domain.user.entity.User;
+import com.night.admin.domain.auth.TokenSessionService;
 import com.night.admin.exception.BusinessException;
 import com.night.admin.util.JwtUtil;
 import com.night.common.dto.ErrorCode;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -26,7 +28,7 @@ public class AuthService {
     private final TokenSessionService tokenSessionService;
     private final UserRepository userRepository;
 
-    public com.night.admin.domain.entity.LoginResponse login(String username, String password) {
+    public LoginResult login(String username, String password) {
         log.info("Login attempt for username: {}", username);
         
         try {
@@ -48,12 +50,7 @@ public class AuthService {
             
             log.info("User logged in successfully: {}", username);
             
-            com.night.admin.domain.entity.LoginResponse response = new com.night.admin.domain.entity.LoginResponse();
-            response.setToken(token);
-            response.setUsername(username);
-            response.setUserId(userEntity.getId());
-            
-            return response;
+            return new LoginResult(token, username, userEntity.getId());
                     
         } catch (AuthenticationException e) {
             log.warn("Invalid login attempt for username: {}", username);
@@ -68,5 +65,13 @@ public class AuthService {
             tokenSessionService.deleteToken(token);
             log.info("User logged out: {}", username);
         }
+    }
+    
+    @Data
+    @AllArgsConstructor
+    public static class LoginResult {
+        private String token;
+        private String username;
+        private Long userId;
     }
 }

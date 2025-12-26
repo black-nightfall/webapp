@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 public class AuthMapper {
     
     public com.night.admin.application.dto.response.LoginResponse toLoginResponse(
-            com.night.admin.domain.entity.LoginResponse domainResponse) {
+            com.night.admin.domain.auth.AuthService.LoginResult domainResponse) {
         if (domainResponse == null) {
             return null;
         }

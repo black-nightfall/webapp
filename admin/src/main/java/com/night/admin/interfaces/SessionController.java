@@ -1,7 +1,7 @@
 package com.night.admin.interfaces;
 
-import com.night.admin.domain.auth.service.TokenSessionService;
-import com.night.admin.domain.auth.dto.SessionInfoDTO;
+import com.night.admin.domain.auth.TokenSessionService;
+import com.night.admin.application.dto.response.SessionInfoDTO;
 import com.night.common.dto.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

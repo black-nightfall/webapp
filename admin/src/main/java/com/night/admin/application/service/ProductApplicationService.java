@@ -17,13 +17,13 @@ public class ProductApplicationService {
     private final ProductMapper productMapper;
     
     public ProductResponseDTO createProduct(CreateProductRequest request) {
-        com.night.admin.domain.entity.Product product = productMapper.toDomain(request);
-        com.night.admin.domain.entity.Product savedProduct = productDomainService.createProduct(product);
+        com.night.admin.domain.product.entity.Product product = productMapper.toDomain(request);
+        com.night.admin.domain.product.entity.Product savedProduct = productDomainService.createProduct(product);
         return productMapper.toResponseDTO(savedProduct);
     }
     
     public ProductResponseDTO getProductById(Long id) {
-        com.night.admin.domain.entity.Product product = productDomainService.getProductById(id);
+        com.night.admin.domain.product.entity.Product product = productDomainService.getProductById(id);
         if (product != null) {
             return productMapper.toResponseDTO(product);
         }

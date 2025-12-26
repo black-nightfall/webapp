@@ -1,6 +1,6 @@
 package com.night.admin.application.mapper;
 
-import com.night.admin.domain.entity.Product;
+import com.night.admin.domain.product.entity.Product;
 import com.night.admin.application.dto.response.ProductResponseDTO;
 import com.night.admin.application.dto.request.CreateProductRequest;
 import org.springframework.stereotype.Component;

@@ -18,13 +18,13 @@ public class OrderApplicationService {
     
     public OrderResponseDTO createOrder(CreateOrderRequest request) {
         // 将应用层DTO转换为领域对象
-        com.night.admin.domain.entity.Order order = orderMapper.toDomain(request);
-        com.night.admin.domain.entity.Order savedOrder = orderDomainService.createOrder(order);
+        com.night.admin.domain.order.entity.Order order = orderMapper.toDomain(request);
+        com.night.admin.domain.order.entity.Order savedOrder = orderDomainService.createOrder(order);
         return orderMapper.toResponseDTO(savedOrder);
     }
     
     public OrderResponseDTO getOrderById(Long id) {
-        com.night.admin.domain.entity.Order order = orderDomainService.getOrderById(id);
+        com.night.admin.domain.order.entity.Order order = orderDomainService.getOrderById(id);
         if (order != null) {
             return orderMapper.toResponseDTO(order);
         }

@@ -1,4 +1,4 @@
-package com.night.admin.domain.auth.dto;
+package com.night.admin.application.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
