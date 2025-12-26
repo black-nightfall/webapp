@@ -21,10 +21,40 @@ public class GlobalExceptionHandler {
     
 
     @ExceptionHandler(BusinessException.class)
-    @ResponseStatus(HttpStatus.OK)
-    public ApiResponse<Void> handleBusinessException(BusinessException e) {
+    public ApiResponse<Void> handleBusinessException(BusinessException e, 
+                                                       jakarta.servlet.http.HttpServletResponse response) {
         log.warn("Business exception: code={}, message={}", e.getErrorCode().getCode(), e.getMessage());
+        
+        // Map ErrorCode to HTTP status code
+        HttpStatus httpStatus = mapErrorCodeToHttpStatus(e.getErrorCode());
+        response.setStatus(httpStatus.value());
+        
         return ApiResponse.error(e.getErrorCode());
+    }
+    
+    /**
+     * Map ErrorCode to appropriate HTTP status code
+     */
+    private HttpStatus mapErrorCodeToHttpStatus(ErrorCode errorCode) {
+        return switch (errorCode) {
+            // Authentication errors -> 401
+            case INVALID_CREDENTIALS, TOKEN_EXPIRED, TOKEN_INVALID, UNAUTHORIZED -> HttpStatus.UNAUTHORIZED;
+            
+            // Authorization/Access errors -> 403
+            case ACCESS_DENIED, USER_DISABLED, FORBIDDEN -> HttpStatus.FORBIDDEN;
+            
+            // Not found errors -> 404
+            case NOT_FOUND, USER_NOT_FOUND, PRODUCT_NOT_FOUND, ORDER_NOT_FOUND -> HttpStatus.NOT_FOUND;
+            
+            // Bad request errors -> 400
+            case BAD_REQUEST -> HttpStatus.BAD_REQUEST;
+            
+            // Server errors -> 500
+            case INTERNAL_SERVER_ERROR -> HttpStatus.INTERNAL_SERVER_ERROR;
+            
+            // All other business errors -> 400
+            default -> HttpStatus.BAD_REQUEST;
+        };
     }
     
 

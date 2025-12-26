@@ -23,13 +23,8 @@ public class AuthController {
      */
     @PostMapping("/login")
     public ApiResponse<LoginResponse> login(@Valid @RequestBody LoginRequest request) {
-        try {
-            LoginResponse response = authApplicationService.login(request);
-            return ApiResponse.success(response, "登录成功");
-        } catch (Exception e) {
-            log.error("登录失败: {}", e.getMessage(), e);
-            return ApiResponse.error(com.night.common.dto.ErrorCode.INVALID_CREDENTIALS, "登录失败");
-        }
+        LoginResponse response = authApplicationService.login(request);
+        return ApiResponse.success(response, "登录成功");
     }
     
     /**
@@ -37,16 +32,11 @@ public class AuthController {
      */
     @PostMapping("/logout")
     public ApiResponse<Void> logout(HttpServletRequest request) {
-        try {
-            String token = getTokenFromRequest(request);
-            if (token != null) {
-                authApplicationService.logout(token);
-            }
-            return ApiResponse.success(null, "登出成功");
-        } catch (Exception e) {
-            log.error("登出失败: {}", e.getMessage(), e);
-            return ApiResponse.error(com.night.common.dto.ErrorCode.ACCESS_DENIED, "登出失败");
+        String token = getTokenFromRequest(request);
+        if (token != null) {
+            authApplicationService.logout(token);
         }
+        return ApiResponse.success(null, "登出成功");
     }
     
     private String getTokenFromRequest(HttpServletRequest request) {
