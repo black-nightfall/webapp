@@ -1,8 +1,7 @@
 package com.night.admin.domain.auth;
 
-import com.night.admin.infrastructure.persistence.repository.UserRepository;
+import com.night.admin.domain.user.repository.UserRepository;
 import com.night.admin.domain.user.entity.User;
-import com.night.admin.domain.auth.TokenSessionService;
 import com.night.admin.exception.BusinessException;
 import com.night.admin.util.JwtUtil;
 import com.night.common.dto.ErrorCode;
@@ -15,8 +14,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.stereotype.Service;
-
-import java.util.Optional;
 
 @Service
 @Slf4j
@@ -36,11 +33,10 @@ public class AuthService {
                     new UsernamePasswordAuthenticationToken(username, password)
             );
             
-            com.night.admin.infrastructure.persistence.entity.UserEntity userEntity = 
-                userRepository.findByUsername(username)
+            User user = userRepository.findByUsername(username)
                     .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
             
-            if (!userEntity.getIsActive()) {
+            if (!user.getIsActive()) {
                 throw new BusinessException(ErrorCode.USER_DISABLED);
             }
             
@@ -50,7 +46,7 @@ public class AuthService {
             
             log.info("User logged in successfully: {}", username);
             
-            return new LoginResult(token, username, userEntity.getId());
+            return new LoginResult(token, username, user.getId());
                     
         } catch (AuthenticationException e) {
             log.warn("Invalid login attempt for username: {}", username);

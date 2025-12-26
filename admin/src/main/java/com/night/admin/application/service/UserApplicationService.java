@@ -1,6 +1,6 @@
 package com.night.admin.application.service;
 
-import com.night.admin.domain.user.UserDomainService;
+import com.night.admin.domain.user.UserService;
 import com.night.admin.domain.user.entity.User;
 import com.night.admin.application.dto.response.UserResponseDTO;
 import com.night.admin.application.dto.request.CreateUserRequestDTO;
@@ -14,11 +14,11 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class UserApplicationService {
     
-    private final UserDomainService userDomainService;
+    private final UserService userService;
     private final UserMapper userMapper;
     
     public UserResponseDTO getUserById(Long id) {
-        User user = userDomainService.findById(id);
+        User user = userService.getUserById(id);
         if (user != null) {
             return userMapper.toResponseDTO(user);
         }
@@ -27,7 +27,7 @@ public class UserApplicationService {
     
     public UserResponseDTO createUser(CreateUserRequestDTO request) {
         User user = userMapper.toDomain(request);
-        User savedUser = userDomainService.save(user);
+        User savedUser = userService.save(user);
         return userMapper.toResponseDTO(savedUser);
     }
 }
