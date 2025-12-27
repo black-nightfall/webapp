@@ -1,19 +1,16 @@
 -- sql
 -- 插入初始角色数据
 WITH r AS (
-    INSERT INTO role_info (name, description)
-    VALUES ('super_admin', 'Super administrator with full privileges')
+    INSERT INTO role_info (id, name, description)
+    VALUES (0, 'super_admin', 'Super administrator with full privileges')
     RETURNING id
 ),
 -- 插入初始用户数据
 u AS (
-    INSERT INTO user_info (uid, username, email, password_hash, full_name, is_active)
-    VALUES (gen_random_uuid(), 'superadmin', 'admin@example.com', '$2a$10$NtwkCVIX.hL.83rcqPzC5upknYykY69WEdbDAXCslOLipqqtxjXFq', 'Super Admin', true)
+    INSERT INTO user_info (uid,role_id, username, email, password_hash, full_name, is_active)
+    VALUES (gen_random_uuid(), 0, 'superadmin', 'admin@example.com', '$2a$10$NtwkCVIX.hL.83rcqPzC5upknYykY69WEdbDAXCslOLipqqtxjXFq', 'Super Admin', true)
     RETURNING id
 )
--- 关联用户和角色
-INSERT INTO user_role (user_id, role_id, assigned_at)
-SELECT u.id, r.id, now() FROM u, r;
 
 -- 插入初始产品数据
 INSERT INTO products (name, description, price, stock, category, image_url, is_active)
