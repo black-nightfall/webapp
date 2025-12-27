@@ -22,6 +22,8 @@ import {
 } from '@ant-design/icons';
 import type { ColumnsType, TablePaginationConfig } from 'antd/es/table';
 import api from '../../services/api';
+import { roleApi } from '../../services/roleApi';
+import type { Role } from '../role/types';
 
 // 用户接口定义
 interface User {
@@ -31,6 +33,7 @@ interface User {
     email: string;
     fullName: string;
     isActive: boolean;
+    roleId?: number;
     createdAt: string;
     updatedAt: string;
 }
@@ -42,6 +45,7 @@ interface UserFormData {
     password?: string;
     fullName: string;
     isActive: boolean;
+    roleId?: number;
 }
 
 // 搜索参数接口
@@ -70,6 +74,9 @@ const UserList: React.FC = () => {
     const [sortBy, setSortBy] = useState('createdAt');
     const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
 
+    // 角色列表
+    const [roles, setRoles] = useState<Role[]>([]);
+
     // Modal 状态
     const [createModalVisible, setCreateModalVisible] = useState(false);
     const [editModalVisible, setEditModalVisible] = useState(false);
@@ -83,6 +90,16 @@ const UserList: React.FC = () => {
     const [createForm] = Form.useForm<UserFormData>();
     const [editForm] = Form.useForm<UserFormData>();
     const [searchForm] = Form.useForm<SearchParams>();
+
+    // 加载角色列表
+    const fetchRoles = async () => {
+        try {
+            const roleList = await roleApi.getRoles();
+            setRoles(roleList);
+        } catch (error) {
+            console.error('Error fetching roles:', error);
+        }
+    };
 
     // 加载用户列表
     const fetchUsers = async (params?: {
@@ -134,6 +151,7 @@ const UserList: React.FC = () => {
 
     useEffect(() => {
         fetchUsers();
+        fetchRoles();
     }, []);
 
     // 处理分页变化
@@ -192,6 +210,7 @@ const UserList: React.FC = () => {
             email: user.email,
             fullName: user.fullName,
             isActive: user.isActive,
+            roleId: user.roleId,
             password: undefined, // 编辑时不显示密码
         });
         setEditModalVisible(true);
@@ -299,6 +318,17 @@ const UserList: React.FC = () => {
                     {isActive ? 'Active' : 'Inactive'}
                 </Tag>
             ),
+        },
+        {
+            title: 'Role',
+            dataIndex: 'roleId',
+            key: 'roleId',
+            width: 150,
+            render: (roleId?: number) => {
+                if (!roleId) return <Tag>No Role</Tag>;
+                const role = roles.find(r => r.id === roleId);
+                return role ? <Tag color="blue">{role.name}</Tag> : <Tag>Unknown</Tag>;
+            },
         },
         {
             title: 'Created At',
@@ -465,6 +495,24 @@ const UserList: React.FC = () => {
                     </Form.Item>
 
                     <Form.Item
+                        label="Role"
+                        name="roleId"
+                    >
+                        <Select
+                            placeholder="Select a role (optional)"
+                            allowClear
+                            showSearch
+                            filterOption={(input, option) =>
+                                (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+                            }
+                            options={roles.map(role => ({
+                                label: role.name,
+                                value: role.id,
+                            }))}
+                        />
+                    </Form.Item>
+
+                    <Form.Item
                         label="Active"
                         name="isActive"
                         valuePropName="checked"
@@ -530,6 +578,24 @@ const UserList: React.FC = () => {
                         rules={[{ required: true, message: 'Please input full name!' }]}
                     >
                         <Input placeholder="Enter full name" />
+                    </Form.Item>
+
+                    <Form.Item
+                        label="Role"
+                        name="roleId"
+                    >
+                        <Select
+                            placeholder="Select a role (optional)"
+                            allowClear
+                            showSearch
+                            filterOption={(input, option) =>
+                                (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+                            }
+                            options={roles.map(role => ({
+                                label: role.name,
+                                value: role.id,
+                            }))}
+                        />
                     </Form.Item>
 
                     <Form.Item

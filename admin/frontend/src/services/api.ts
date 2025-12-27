@@ -59,6 +59,32 @@ const mockApiHandler = {
             return mockApi.order.getOrders() as Promise<T>;
         }
 
+        // Roles
+        if (url.match(/\/roles\/\d+\/permissions$/)) {
+            const parts = url.split('/');
+            const roleId = parseInt(parts[parts.length - 2]);
+            return mockApi.role.getRolePermissions(roleId) as Promise<T>;
+        }
+        if (url.match(/\/roles\/\d+$/)) {
+            const id = parseInt(url.split('/').pop() || '0');
+            return mockApi.role.getRoleById(id) as Promise<T>;
+        }
+        if (url.includes('/roles/search')) {
+            const params = config?.params || {};
+            return mockApi.role.searchRoles(params) as Promise<T>;
+        }
+        if (url === '/roles') {
+            return mockApi.role.getRoles() as Promise<T>;
+        }
+
+        // Menus
+        if (url.includes('/menus/tree')) {
+            return mockApi.menu.getMenuTree() as Promise<T>;
+        }
+        if (url === '/menus') {
+            return mockApi.menu.getMenus() as Promise<T>;
+        }
+
         throw new Error(`Mock API not implemented for GET ${url}`);
     },
 
@@ -86,6 +112,11 @@ const mockApiHandler = {
             return mockApi.order.createOrder(data as any) as Promise<T>;
         }
 
+        // Roles
+        if (url === '/roles') {
+            return mockApi.role.createRole(data as any) as Promise<T>;
+        }
+
         throw new Error(`Mock API not implemented for POST ${url}`);
     },
 
@@ -104,6 +135,18 @@ const mockApiHandler = {
             return mockApi.product.updateProduct(id, data as any) as Promise<T>;
         }
 
+        // Roles
+        if (url.match(/\/roles\/\d+\/permissions$/)) {
+            const parts = url.split('/');
+            const roleId = parseInt(parts[parts.length - 2]);
+            const { menuIds } = data as { menuIds: number[] };
+            return mockApi.role.assignPermissions(roleId, menuIds) as Promise<T>;
+        }
+        if (url.match(/\/roles\/\d+$/)) {
+            const id = parseInt(url.split('/').pop() || '0');
+            return mockApi.role.updateRole(id, data as any) as Promise<T>;
+        }
+
         throw new Error(`Mock API not implemented for PUT ${url}`);
     },
 
@@ -120,6 +163,12 @@ const mockApiHandler = {
         if (url.match(/\/products\/\d+$/)) {
             const id = parseInt(url.split('/').pop() || '0');
             return mockApi.product.deleteProduct(id) as Promise<T>;
+        }
+
+        // Roles
+        if (url.match(/\/roles\/\d+$/)) {
+            const id = parseInt(url.split('/').pop() || '0');
+            return mockApi.role.deleteRole(id) as Promise<T>;
         }
 
         throw new Error(`Mock API not implemented for DELETE ${url}`);

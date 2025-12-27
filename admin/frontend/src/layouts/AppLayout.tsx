@@ -5,6 +5,7 @@ import {
     ShoppingOutlined,
     DashboardOutlined,
     OrderedListOutlined,
+    SafetyCertificateOutlined,
 } from '@ant-design/icons';
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 import UserDropdown from '../components/UserDropdown';
@@ -29,6 +30,11 @@ const AppLayout: React.FC = () => {
             key: '/users',
             icon: <UserOutlined />,
             label: 'Users',
+        },
+        {
+            key: '/roles',
+            icon: <SafetyCertificateOutlined />,
+            label: 'Roles',
         },
         {
             key: '/products',

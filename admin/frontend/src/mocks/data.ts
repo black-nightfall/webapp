@@ -255,3 +255,168 @@ export const mockOrders: MockOrder[] = [
         updatedAt: '2025-01-12T16:45:00',
     },
 ];
+
+// Mock角色数据
+export interface MockRole {
+    id: number;
+    name: string;
+    description?: string;
+    createdAt: string;
+    updatedAt: string;
+}
+
+export let mockRoles: MockRole[] = [
+    {
+        id: 1,
+        name: '超级管理员',
+        description: '拥有系统所有权限',
+        createdAt: '2025-01-01T00:00:00',
+        updatedAt: '2025-01-01T00:00:00',
+    },
+    {
+        id: 2,
+        name: '管理员',
+        description: '拥有大部分管理权限',
+        createdAt: '2025-01-01T00:00:00',
+        updatedAt: '2025-01-01T00:00:00',
+    },
+    {
+        id: 3,
+        name: '普通用户',
+        description: '基础用户权限',
+        createdAt: '2025-01-01T00:00:00',
+        updatedAt: '2025-01-01T00:00:00',
+    },
+];
+
+// Mock菜单数据
+export interface MockMenu {
+    id: number;
+    parentId: number;
+    title: string;
+    name?: string;
+    path?: string;
+    component?: string;
+    perms?: string;
+    icon?: string;
+    sortOrder?: number;
+    menuType: 'M' | 'C' | 'F'; // M:目录, C:菜单, F:按钮
+    createdAt?: string;
+    updatedAt?: string;
+    children?: MockMenu[];
+}
+
+export const mockMenus: MockMenu[] = [
+    {
+        id: 1,
+        parentId: 0,
+        title: '系统管理',
+        menuType: 'M',
+        sortOrder: 1,
+        icon: 'SettingOutlined',
+    },
+    {
+        id: 2,
+        parentId: 1,
+        title: '用户管理',
+        name: 'users',
+        path: '/users',
+        menuType: 'C',
+        perms: 'user:list',
+        sortOrder: 1,
+        icon: 'UserOutlined',
+    },
+    {
+        id: 3,
+        parentId: 1,
+        title: '角色管理',
+        name: 'roles',
+        path: '/roles',
+        menuType: 'C',
+        perms: 'role:list',
+        sortOrder: 2,
+        icon: 'SafetyCertificateOutlined',
+    },
+    {
+        id: 4,
+        parentId: 2,
+        title: '新增用户',
+        menuType: 'F',
+        perms: 'user:add',
+        sortOrder: 1,
+    },
+    {
+        id: 5,
+        parentId: 2,
+        title: '编辑用户',
+        menuType: 'F',
+        perms: 'user:edit',
+        sortOrder: 2,
+    },
+    {
+        id: 6,
+        parentId: 2,
+        title: '删除用户',
+        menuType: 'F',
+        perms: 'user:delete',
+        sortOrder: 3,
+    },
+    {
+        id: 7,
+        parentId: 3,
+        title: '新增角色',
+        menuType: 'F',
+        perms: 'role:add',
+        sortOrder: 1,
+    },
+    {
+        id: 8,
+        parentId: 3,
+        title: '编辑角色',
+        menuType: 'F',
+        perms: 'role:edit',
+        sortOrder: 2,
+    },
+    {
+        id: 9,
+        parentId: 3,
+        title: '删除角色',
+        menuType: 'F',
+        perms: 'role:delete',
+        sortOrder: 3,
+    },
+    {
+        id: 10,
+        parentId: 3,
+        title: '分配权限',
+        menuType: 'F',
+        perms: 'role:assign',
+        sortOrder: 4,
+    },
+    {
+        id: 11,
+        parentId: 0,
+        title: '商品管理',
+        menuType: 'M',
+        sortOrder: 2,
+        icon: 'ShoppingOutlined',
+    },
+    {
+        id: 12,
+        parentId: 11,
+        title: '商品列表',
+        name: 'products',
+        path: '/products',
+        menuType: 'C',
+        perms: 'product:list',
+        sortOrder: 1,
+    },
+];
+
+// Mock角色权限关联数据 (roleId -> menuIds)
+export const mockRolePermissions: Record<number, number[]> = {
+    1: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12], // 超级管理员拥有所有权限
+    2: [1, 2, 3, 4, 5, 7, 8, 11, 12], // 管理员
+    3: [2, 11, 12], // 普通用户
+};
+

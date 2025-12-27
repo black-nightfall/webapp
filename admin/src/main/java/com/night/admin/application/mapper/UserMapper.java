@@ -29,6 +29,7 @@ public class UserMapper {
                 .email(user.getEmail())
                 .fullName(user.getFullName())
                 .isActive(user.getIsActive())
+                .roleId(user.getRoleId())
                 .createdAt(user.getCreatedAt())
                 .updatedAt(user.getUpdatedAt())
                 .build();
@@ -73,6 +74,7 @@ public class UserMapper {
 
         user.setFullName(request.getFullName());
         user.setIsActive(request.getIsActive());
+        user.setRoleId(request.getRoleId());
         return user;
     }
 }

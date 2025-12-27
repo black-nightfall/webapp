@@ -1,5 +1,5 @@
-import { mockUsers, mockProducts, mockOrders } from './data';
-import type { MockUser, MockProduct, MockOrder } from './data';
+import { mockUsers, mockProducts, mockOrders, mockRoles, mockMenus, mockRolePermissions } from './data';
+import type { MockUser, MockProduct, MockOrder, MockRole, MockMenu } from './data';
 
 // 延迟模拟网络请求
 const delay = (ms: number = 500) => new Promise(resolve => setTimeout(resolve, ms));
@@ -257,10 +257,169 @@ export const mockOrderApi = {
     },
 };
 
+// ==================== Role API ====================
+export const mockRoleApi = {
+    async getRoles() {
+        await delay();
+        return createSuccessResponse(mockRoles, '查询成功');
+    },
+
+    async getRoleById(id: number) {
+        await delay();
+        const role = mockRoles.find(r => r.id === id);
+        if (!role) {
+            throw new Error('角色不存在');
+        }
+        return createSuccessResponse(role, '查询成功');
+    },
+
+    async searchRoles(params: {
+        name?: string;
+        page?: number;
+        size?: number;
+        sortBy?: string;
+        sortDirection?: 'asc' | 'desc';
+    }) {
+        await delay();
+
+        let filtered = [...mockRoles];
+
+        // 按条件过滤
+        if (params.name) {
+            filtered = filtered.filter(r => r.name.toLowerCase().includes(params.name!.toLowerCase()));
+        }
+
+        // 排序
+        const sortBy = params.sortBy || 'createdAt';
+        const sortDirection = params.sortDirection || 'desc';
+        filtered.sort((a, b) => {
+            const aValue = (a as any)[sortBy];
+            const bValue = (b as any)[sortBy];
+
+            if (aValue < bValue) return sortDirection === 'asc' ? -1 : 1;
+            if (aValue > bValue) return sortDirection === 'asc' ? 1 : -1;
+            return 0;
+        });
+
+        // 分页
+        const page = params.page || 0;
+        const size = params.size || 10;
+        const start = page * size;
+        const end = start + size;
+        const paginatedData = filtered.slice(start, end);
+
+        return createSuccessResponse({
+            content: paginatedData,
+            totalElements: filtered.length,
+            totalPages: Math.ceil(filtered.length / size),
+            size,
+            number: page,
+            first: page === 0,
+            last: end >= filtered.length,
+            empty: paginatedData.length === 0,
+        }, '查询成功');
+    },
+
+    async createRole(roleData: Partial<MockRole>) {
+        await delay();
+        const newRole: MockRole = {
+            id: Math.max(...mockRoles.map(r => r.id), 0) + 1,
+            name: roleData.name || '新角色',
+            description: roleData.description,
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+        };
+        mockRoles.push(newRole);
+        return createSuccessResponse(newRole, '创建成功');
+    },
+
+    async updateRole(id: number, roleData: Partial<MockRole>) {
+        await delay();
+        const index = mockRoles.findIndex(r => r.id === id);
+        if (index === -1) {
+            throw new Error('角色不存在');
+        }
+
+        const existingRole = mockRoles[index];
+        mockRoles[index] = {
+            ...existingRole,
+            ...roleData,
+            id: existingRole.id,
+            createdAt: existingRole.createdAt,
+            updatedAt: new Date().toISOString(),
+        };
+
+        return createSuccessResponse(mockRoles[index], '更新成功');
+    },
+
+    async deleteRole(id: number) {
+        await delay();
+        const index = mockRoles.findIndex(r => r.id === id);
+        if (index === -1) {
+            throw new Error('角色不存在');
+        }
+
+        mockRoles.splice(index, 1);
+        // 同时删除权限关联
+        delete mockRolePermissions[id];
+        return createSuccessResponse(null, '删除成功');
+    },
+
+    async assignPermissions(roleId: number, menuIds: number[]) {
+        await delay();
+        const role = mockRoles.find(r => r.id === roleId);
+        if (!role) {
+            throw new Error('角色不存在');
+        }
+
+        // 更新权限关联
+        mockRolePermissions[roleId] = menuIds;
+        return createSuccessResponse(null, '权限分配成功');
+    },
+
+    async getRolePermissions(roleId: number) {
+        await delay();
+        const role = mockRoles.find(r => r.id === roleId);
+        if (!role) {
+            throw new Error('角色不存在');
+        }
+
+        const menuIds = mockRolePermissions[roleId] || [];
+        const permissions = mockMenus.filter(m => menuIds.includes(m.id));
+        return createSuccessResponse(permissions, '查询成功');
+    },
+};
+
+// ==================== Menu API ====================
+// 构建菜单树的辅助函数
+const buildMenuTree = (menus: MockMenu[], parentId: number = 0): MockMenu[] => {
+    return menus
+        .filter(menu => menu.parentId === parentId)
+        .map(menu => ({
+            ...menu,
+            children: buildMenuTree(menus, menu.id),
+        }));
+};
+
+export const mockMenuApi = {
+    async getMenus() {
+        await delay();
+        return createSuccessResponse(mockMenus, '查询成功');
+    },
+
+    async getMenuTree() {
+        await delay();
+        const tree = buildMenuTree(mockMenus);
+        return createSuccessResponse(tree, '查询成功');
+    },
+};
+
 // 导出所有Mock API
 export const mockApi = {
     auth: mockAuthApi,
     user: mockUserApi,
     product: mockProductApi,
     order: mockOrderApi,
+    role: mockRoleApi,
+    menu: mockMenuApi,
 };

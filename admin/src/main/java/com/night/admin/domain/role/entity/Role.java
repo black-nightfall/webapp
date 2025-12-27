@@ -1,4 +1,4 @@
-package com.night.admin.domain.user.entity;
+package com.night.admin.domain.role.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -7,43 +7,26 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 @Entity
-@Table(name = "user_info")
+@Table(name = "role_info")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @EntityListeners(AuditingEntityListener.class)
-public class User {
+public class Role {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    @Column(insertable = false, updatable = false)
-    private UUID uid;
+    private Integer id;
 
     @Column(unique = true, nullable = false, length = 100)
-    private String username;
+    private String name;
 
-    @Column(name = "password_hash", nullable = false)
-    private String password;
-
-    @Column(unique = true, nullable = false, length = 255)
-    private String email;
-
-    @Column(name = "full_name")
-    private String fullName;
-
-    @Builder.Default
-    @Column(name = "is_active", nullable = false)
-    private Boolean isActive = true;
-
-    @Column(name = "role_id")
-    private Long roleId;
+    @Column(columnDefinition = "text")
+    private String description;
 
     @CreatedDate
     @Column(name = "created_at", nullable = false, updatable = false)
