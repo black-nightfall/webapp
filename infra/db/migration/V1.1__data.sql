@@ -8,7 +8,7 @@ WITH r AS (
 -- 插入初始用户数据
 u AS (
     INSERT INTO user_info (uid, username, email, password_hash, full_name, is_active)
-    VALUES (gen_random_uuid(), 'superadmin', 'admin@example.com', '<REPLACE_WITH_BCRYPT_HASH>', 'Super Admin', true)
+    VALUES (gen_random_uuid(), 'superadmin', 'admin@example.com', '$2a$10$NtwkCVIX.hL.83rcqPzC5upknYykY69WEdbDAXCslOLipqqtxjXFq', 'Super Admin', true)
     RETURNING id
 )
 -- 关联用户和角色

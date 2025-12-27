@@ -51,11 +51,14 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     });
 
     const login = async (username: string, password: string) => {
-        const data = await api.post<{ token: string; username: string }>(
+        // 后端返回 ApiResponse<LoginResponse> 格式：{ code, message, data: { token, username, userId } }
+        const response = await api.post<{ code: number; message: string; data: { token: string; username: string; userId?: number } }>(
             '/auth/login',
             { username, password }
         );
 
+        // 从 ApiResponse 中提取实际数据
+        const data = response.data;
         const userData = { username: data.username, token: data.token };
         setUser(userData);
         localStorage.setItem('user', JSON.stringify(userData));

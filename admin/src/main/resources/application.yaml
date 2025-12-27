@@ -1,12 +1,17 @@
 spring:
   application:
     name: admin
-
+  docker:
+    compose:
+      project-name: admin-dev
+      file: ./infra/docker/docker-compose.yml
+      profiles:
+        active: dev
   # 数据库配置
   datasource:
-    url: jdbc:postgresql://localhost:5432/appdb
-    username: appuser
-    password: changeme
+    url: jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:5432}/${POSTGRES_DB:appdb}
+    username: ${POSTGRES_USER:appuser}
+    password: ${POSTGRES_PASSWORD:changeme}
     driver-class-name: org.postgresql.Driver
     hikari:
       maximum-pool-size: 10
@@ -24,12 +29,11 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQLDialect
     open-in-view: false
 
-
   # Redis 配置
   data:
     redis:
-      host: localhost
-      port: 6379
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
       password: changeme
       database: 0
       timeout: 3000ms
@@ -38,13 +42,12 @@ spring:
           max-active: 8
           max-idle: 8
           min-idle: 2
-
-  docker:
-    compose:
-      file: ./infra/docker/docker-compose.yml
+      # 显式配置连接参数
+      client-type: lettuce
+      connect-timeout: 10000ms
 
 server:
-  port: 9090
+  port: ${SERVER_PORT:9090}
   servlet:
     context-path: /admin
 

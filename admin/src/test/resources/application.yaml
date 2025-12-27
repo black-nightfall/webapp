@@ -1,0 +1,29 @@
+spring:
+  docker:
+    compose:
+      project-name: admin-tests
+      file: ../infra/docker/docker-compose.yml
+      skip:
+        in-tests: false
+      profiles:
+        active: test
+  jpa:
+    show-sql: false
+    hibernate:
+      ddl-auto: validate
+
+
+jwt:
+  secret: ${JWT_SECRET:test-secret-key-for-unit-tests-at-least-256-bits-long}
+  expiration: 3600
+auth:
+  admin:
+    username: admin
+    password: testpass123
+
+logging:
+  level:
+    com.night.admin: DEBUG
+    org.springframework.web: INFO
+    org.springframework.security: DEBUG
+    org.hibernate.SQL: DEBUG

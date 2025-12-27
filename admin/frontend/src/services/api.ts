@@ -140,9 +140,10 @@ const axiosInstance = axios.create({
     },
 });
 
-// Request interceptor - attach auth token
+// Request interceptor - attach auth token and language
 axiosInstance.interceptors.request.use(
     (config: InternalAxiosRequestConfig) => {
+        // Add auth token
         const userStr = localStorage.getItem('user');
         if (userStr) {
             try {
@@ -154,6 +155,11 @@ axiosInstance.interceptors.request.use(
                 console.error('Failed to parse user data:', error);
             }
         }
+
+        // Add language header
+        const language = localStorage.getItem('language') || 'zh-CN';
+        config.headers['Accept-Language'] = language;
+
         return config;
     },
     (error) => {

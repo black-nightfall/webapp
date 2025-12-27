@@ -4,10 +4,19 @@ import com.night.admin.domain.user.entity.User;
 import com.night.admin.application.dto.response.UserResponseDTO;
 import com.night.admin.application.dto.request.CreateUserRequestDTO;
 import com.night.admin.application.dto.request.UpdateUserRequestDTO;
+import com.night.admin.util.PasswordUtil;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+/**
+ * 用户映射器
+ * 负责 DTO 和 Domain 实体之间的转换
+ */
 @Component
+@RequiredArgsConstructor
 public class UserMapper {
+
+    private final PasswordUtil passwordUtil;
 
     public UserResponseDTO toResponseDTO(User user) {
         if (user == null) {
@@ -25,6 +34,10 @@ public class UserMapper {
                 .build();
     }
 
+    /**
+     * 将创建用户请求 DTO 转换为 Domain 实体
+     * 自动加密密码
+     */
     public User toDomain(CreateUserRequestDTO request) {
         if (request == null) {
             return null;
@@ -32,10 +45,19 @@ public class UserMapper {
         User user = new User();
         user.setUsername(request.getUsername());
         user.setEmail(request.getEmail());
-        user.setPassword(request.getPassword());
+
+        // 加密密码
+        if (request.getPassword() != null && !request.getPassword().isEmpty()) {
+            user.setPassword(passwordUtil.encodePassword(request.getPassword()));
+        }
+
         return user;
     }
-    
+
+    /**
+     * 将更新用户请求 DTO 转换为 Domain 实体
+     * 如果提供了密码，则自动加密
+     */
     public User toDomain(UpdateUserRequestDTO request) {
         if (request == null) {
             return null;
@@ -43,7 +65,12 @@ public class UserMapper {
         User user = new User();
         user.setUsername(request.getUsername());
         user.setEmail(request.getEmail());
-        user.setPassword(request.getPassword());
+
+        // 只有提供了新密码时才加密
+        if (request.getPassword() != null && !request.getPassword().isEmpty()) {
+            user.setPassword(passwordUtil.encodePassword(request.getPassword()));
+        }
+
         user.setFullName(request.getFullName());
         user.setIsActive(request.getIsActive());
         return user;

@@ -35,8 +35,8 @@ dependencies {
     // Validation
     implementation(libs.springBootStarterValidation)
     
-    // Development
     developmentOnly(libs.springBootDockerCompose)
+    testImplementation(libs.springBootDockerCompose)  // 添加到测试依赖
     
     // Testing
     testImplementation(libs.bundles.testingSpringWebComplete)

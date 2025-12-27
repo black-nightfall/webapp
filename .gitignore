@@ -29,3 +29,15 @@ replay_pid*
 .idea/
 build
 **/build/
+
+# Environment variables (keep .env.example for reference)
+.env
+.env.local
+.env.*.local
+
+# Docker volumes and data
+**/db_data/
+**/redis_data/
+
+# macOS
+.DS_Store
