@@ -51,24 +51,12 @@ export const roleApi = {
         await api.put<ApiResponse<void>>(`/roles/${roleId}/permissions`, data);
     },
 
-    // 获取角色权限列表
+    // 获取角色的所有权限
     async getRolePermissions(roleId: number): Promise<Menu[]> {
-        const response = await api.get<ApiResponse<Menu[]>>(`/roles/${roleId}/permissions`);
+        const response = await api.get<{ code: number; data: Menu[] }>(`/roles/${roleId}/permissions`);
         return response.data;
     },
 };
 
-// 菜单API服务
-export const menuApi = {
-    // 获取所有菜单（平铺）
-    async getMenus(): Promise<Menu[]> {
-        const response = await api.get<ApiResponse<Menu[]>>('/menus');
-        return response.data;
-    },
-
-    // 获取菜单树
-    async getMenuTree(): Promise<Menu[]> {
-        const response = await api.get<ApiResponse<Menu[]>>('/menus/tree');
-        return response.data;
-    },
-};
+// Note: menuApi has been moved to menuApi.ts
+// Import from: import { menuApi } from './menuApi';

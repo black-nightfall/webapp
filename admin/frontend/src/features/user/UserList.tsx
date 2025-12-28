@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     Table,
     Button,
@@ -6,7 +6,6 @@ import {
     Modal,
     Form,
     Input,
-    Switch,
     message,
     Tag,
     Row,
@@ -21,231 +20,87 @@ import {
     ReloadOutlined
 } from '@ant-design/icons';
 import type { ColumnsType, TablePaginationConfig } from 'antd/es/table';
-import api from '../../services/api';
 import { roleApi } from '../../services/roleApi';
 import type { Role } from '../role/types';
-
-// 用户接口定义
-interface User {
-    id: number;
-    uid: string;
-    username: string;
-    email: string;
-    fullName: string;
-    isActive: boolean;
-    roleId?: number;
-    createdAt: string;
-    updatedAt: string;
-}
-
-// 表单数据接口
-interface UserFormData {
-    username: string;
-    email: string;
-    password?: string;
-    fullName: string;
-    isActive: boolean;
-    roleId?: number;
-}
-
-// 搜索参数接口
-interface SearchParams {
-    username?: string;
-    email?: string;
-    isActive?: boolean | string;
-}
-
-// 分页响应接口
-interface PageResponse<T> {
-    content: T[];
-    totalElements: number;
-    totalPages: number;
-    size: number;
-    number: number;
-    empty?: boolean;
-}
+import type { User, SearchParams } from './types';
+import { UserFormModal } from './components/UserFormModal';
+import { useUserList } from './hooks/useUserList';
 
 const UserList: React.FC = () => {
-    const [users, setUsers] = useState<User[]>([]);
-    const [loading, setLoading] = useState(false);
-    const [total, setTotal] = useState(0);
-    const [currentPage, setCurrentPage] = useState(0);
-    const [pageSize, setPageSize] = useState(10);
-    const [sortBy, setSortBy] = useState('createdAt');
-    const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
+    // 使用自定义hook获取用户列表逻辑
+    const {
+        users,
+        loading,
+        total,
+        currentPage,
+        pageSize,
+        createUser,
+        updateUser,
+        deleteUser,
+        search,
+        resetSearch,
+        fetchUsers,
+        updateSort,
+    } = useUserList();
 
     // 角色列表
     const [roles, setRoles] = useState<Role[]>([]);
 
     // Modal 状态
-    const [createModalVisible, setCreateModalVisible] = useState(false);
-    const [editModalVisible, setEditModalVisible] = useState(false);
-    const [selectedUser, setSelectedUser] = useState<User | null>(null);
-    const [submitting, setSubmitting] = useState(false);
+    const [formModal, setFormModal] = useState<{
+        visible: boolean;
+        mode: 'create' | 'edit';
+        user: User | null;
+    }>({
+        visible: false,
+        mode: 'create',
+        user: null,
+    });
 
-    // 搜索状态
-    const [searchParams, setSearchParams] = useState<SearchParams>({});
-
-    // Form 实例
-    const [createForm] = Form.useForm<UserFormData>();
-    const [editForm] = Form.useForm<UserFormData>();
+    // 搜索表单
     const [searchForm] = Form.useForm<SearchParams>();
 
     // 加载角色列表
-    const fetchRoles = async () => {
-        try {
-            const roleList = await roleApi.getRoles();
-            setRoles(roleList);
-        } catch (error) {
-            console.error('Error fetching roles:', error);
-        }
-    };
-
-    // 加载用户列表
-    const fetchUsers = async (params?: {
-        page?: number;
-        size?: number;
-        sortBy?: string;
-        sortDirection?: 'asc' | 'desc';
-        search?: SearchParams;
-    }) => {
-        setLoading(true);
-        try {
-            const pageNum = params?.page ?? currentPage;
-            const pageSz = params?.size ?? pageSize;
-            const sort = params?.sortBy ?? sortBy;
-            const direction = params?.sortDirection ?? sortDirection;
-            const search = params?.search ?? searchParams;
-
-            const queryParams: any = {
-                page: pageNum,
-                size: pageSz,
-                sortBy: sort,
-                sortDirection: direction,
-                ...search,
-            };
-
-            // 处理 isActive 参数
-            if (queryParams.isActive === '') {
-                delete queryParams.isActive;
-            } else if (queryParams.isActive === 'true') {
-                queryParams.isActive = true;
-            } else if (queryParams.isActive === 'false') {
-                queryParams.isActive = false;
-            }
-
-            const response = await api.get<{ data: PageResponse<User> }>('/users/search', { params: queryParams });
-            const data = response.data;
-
-            setUsers(data.content);
-            setTotal(data.totalElements);
-            setCurrentPage(pageNum);
-            setPageSize(pageSz);
-        } catch (err) {
-            message.error('Failed to load users');
-            console.error('Error fetching users:', err);
-        } finally {
-            setLoading(false);
-        }
-    };
-
     useEffect(() => {
-        fetchUsers();
+        const fetchRoles = async () => {
+            try {
+                const roleList = await roleApi.getRoles();
+                setRoles(roleList);
+            } catch (error) {
+                console.error('Error fetching roles:', error);
+            }
+        };
         fetchRoles();
     }, []);
 
-    // 处理分页变化
-    const handleTableChange = (pagination: TablePaginationConfig, _filters: any, sorter: any) => {
-        const page = (pagination.current || 1) - 1; // Ant Design pagination is 1-indexed
-        const size = pagination.pageSize || pageSize;
-
-        let sort = sortBy;
-        let direction: 'asc' | 'desc' = sortDirection;
-
-        if (sorter.field && sorter.order) {
-            sort = sorter.field as string;
-            direction = sorter.order === 'ascend' ? 'asc' : 'desc';
-            setSortBy(sort);
-            setSortDirection(direction);
-        }
-
-        fetchUsers({ page, size, sortBy: sort, sortDirection: direction });
-    };
-
-    // 打开创建用户 Modal
+    // 打开创建Modal
     const handleCreate = () => {
-        createForm.resetFields();
-        createForm.setFieldsValue({ isActive: true }); // 默认激活
-        setCreateModalVisible(true);
+        setFormModal({ visible: true, mode: 'create', user: null });
     };
 
-    // 创建用户
-    const handleCreateSubmit = async () => {
-        try {
-            const values = await createForm.validateFields();
-            setSubmitting(true);
-
-            await api.post('/users', values);
-            message.success('User created successfully');
-            setCreateModalVisible(false);
-            createForm.resetFields();
-            fetchUsers(); // 重新加载列表
-        } catch (err: any) {
-            if (err.errorFields) {
-                // 表单验证错误
-                return;
-            }
-            message.error('Failed to create user');
-            console.error('Error creating user:', err);
-        } finally {
-            setSubmitting(false);
-        }
-    };
-
-    // 打开编辑用户 Modal
+    // 打开编辑Modal
     const handleEdit = (user: User) => {
-        setSelectedUser(user);
-        editForm.setFieldsValue({
-            username: user.username,
-            email: user.email,
-            fullName: user.fullName,
-            isActive: user.isActive,
-            roleId: user.roleId,
-            password: undefined, // 编辑时不显示密码
-        });
-        setEditModalVisible(true);
+        setFormModal({ visible: true, mode: 'edit', user });
     };
 
-    // 更新用户
-    const handleEditSubmit = async () => {
-        if (!selectedUser) return;
-
+    // 提交表单（创建或编辑）
+    const handleFormSubmit = async (values: any) => {
         try {
-            const values = await editForm.validateFields();
-            setSubmitting(true);
-
-            // 如果密码为空，不发送密码字段
-            const updateData: any = { ...values };
-            if (!updateData.password) {
-                delete updateData.password;
+            if (formModal.mode === 'create') {
+                await createUser(values);
+            } else if (formModal.user) {
+                await updateUser(formModal.user.id, values);
             }
-
-            await api.put(`/users/${selectedUser.id}`, updateData);
-            message.success('User updated successfully');
-            setEditModalVisible(false);
-            setSelectedUser(null);
-            editForm.resetFields();
-            fetchUsers(); // 重新加载列表
-        } catch (err: any) {
-            if (err.errorFields) {
-                // 表单验证错误
-                return;
-            }
-            message.error('Failed to update user');
-            console.error('Error updating user:', err);
-        } finally {
-            setSubmitting(false);
+            setFormModal({ visible: false, mode: 'create', user: null });
+        } catch (error) {
+            // 错误已在hook中处理
+            throw error;
         }
+    };
+
+    // 关闭Modal
+    const handleModalCancel = () => {
+        setFormModal({ visible: false, mode: 'create', user: null });
     };
 
     // 删除用户
@@ -258,9 +113,7 @@ const UserList: React.FC = () => {
             cancelText: 'Cancel',
             onOk: async () => {
                 try {
-                    await api.delete(`/users/${user.id}`);
-                    message.success('User deleted successfully');
-                    fetchUsers(); // 重新加载列表
+                    await deleteUser(user.id);
                 } catch (err) {
                     message.error('Failed to delete user');
                     console.error('Error deleting user:', err);
@@ -272,15 +125,30 @@ const UserList: React.FC = () => {
     // 搜索
     const handleSearch = async () => {
         const values = await searchForm.validateFields();
-        setSearchParams(values);
-        fetchUsers({ page: 0, search: values }); // 搜索时重置到第一页
+        search(values);
     };
 
     // 重置搜索
     const handleResetSearch = () => {
         searchForm.resetFields();
-        setSearchParams({});
-        fetchUsers({ page: 0, search: {} });
+        resetSearch();
+    };
+
+    // 处理分页和排序变化
+    const handleTableChange = (pagination: TablePaginationConfig, _filters: any, sorter: any) => {
+        const page = (pagination.current || 1) - 1; // Ant Design pagination is 1-indexed
+        const size = pagination.pageSize || pageSize;
+
+        let sort = 'createdAt';
+        let direction: 'asc' | 'desc' = 'desc';
+
+        if (sorter.field && sorter.order) {
+            sort = sorter.field as string;
+            direction = sorter.order === 'ascend' ? 'asc' : 'desc';
+            updateSort(sort, direction);
+        }
+
+        fetchUsers({ page, size, sortBy: sort, sortDirection: direction });
     };
 
     // 表格列定义
@@ -436,177 +304,15 @@ const UserList: React.FC = () => {
                 }}
             />
 
-            {/* 创建用户 Modal */}
-            <Modal
-                title="Create User"
-                open={createModalVisible}
-                onOk={handleCreateSubmit}
-                onCancel={() => {
-                    setCreateModalVisible(false);
-                    createForm.resetFields();
-                }}
-                confirmLoading={submitting}
-                width={600}
-            >
-                <Form
-                    form={createForm}
-                    layout="vertical"
-                    initialValues={{ isActive: true }}
-                >
-                    <Form.Item
-                        label="Username"
-                        name="username"
-                        rules={[
-                            { required: true, message: 'Please input username!' },
-                            { min: 3, message: 'Username must be at least 3 characters' },
-                        ]}
-                    >
-                        <Input placeholder="Enter username" />
-                    </Form.Item>
-
-                    <Form.Item
-                        label="Email"
-                        name="email"
-                        rules={[
-                            { required: true, message: 'Please input email!' },
-                            { type: 'email', message: 'Please enter a valid email!' },
-                        ]}
-                    >
-                        <Input placeholder="Enter email address" />
-                    </Form.Item>
-
-                    <Form.Item
-                        label="Password"
-                        name="password"
-                        rules={[
-                            { required: true, message: 'Please input password!' },
-                            { min: 8, message: 'Password must be at least 8 characters' },
-                        ]}
-                    >
-                        <Input.Password placeholder="Enter password" />
-                    </Form.Item>
-
-                    <Form.Item
-                        label="Full Name"
-                        name="fullName"
-                        rules={[{ required: true, message: 'Please input full name!' }]}
-                    >
-                        <Input placeholder="Enter full name" />
-                    </Form.Item>
-
-                    <Form.Item
-                        label="Role"
-                        name="roleId"
-                    >
-                        <Select
-                            placeholder="Select a role (optional)"
-                            allowClear
-                            showSearch
-                            filterOption={(input, option) =>
-                                (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
-                            }
-                            options={roles.map(role => ({
-                                label: role.name,
-                                value: role.id,
-                            }))}
-                        />
-                    </Form.Item>
-
-                    <Form.Item
-                        label="Active"
-                        name="isActive"
-                        valuePropName="checked"
-                    >
-                        <Switch />
-                    </Form.Item>
-                </Form>
-            </Modal>
-
-            {/* 编辑用户 Modal */}
-            <Modal
-                title="Edit User"
-                open={editModalVisible}
-                onOk={handleEditSubmit}
-                onCancel={() => {
-                    setEditModalVisible(false);
-                    setSelectedUser(null);
-                    editForm.resetFields();
-                }}
-                confirmLoading={submitting}
-                width={600}
-            >
-                <Form
-                    form={editForm}
-                    layout="vertical"
-                >
-                    <Form.Item
-                        label="Username"
-                        name="username"
-                        rules={[
-                            { required: true, message: 'Please input username!' },
-                            { min: 3, message: 'Username must be at least 3 characters' },
-                        ]}
-                    >
-                        <Input placeholder="Enter username" />
-                    </Form.Item>
-
-                    <Form.Item
-                        label="Email"
-                        name="email"
-                        rules={[
-                            { required: true, message: 'Please input email!' },
-                            { type: 'email', message: 'Please enter a valid email!' },
-                        ]}
-                    >
-                        <Input placeholder="Enter email address" />
-                    </Form.Item>
-
-                    <Form.Item
-                        label="Password"
-                        name="password"
-                        extra="Leave blank to keep current password"
-                        rules={[
-                            { min: 8, message: 'Password must be at least 8 characters' },
-                        ]}
-                    >
-                        <Input.Password placeholder="Enter new password (optional)" />
-                    </Form.Item>
-
-                    <Form.Item
-                        label="Full Name"
-                        name="fullName"
-                        rules={[{ required: true, message: 'Please input full name!' }]}
-                    >
-                        <Input placeholder="Enter full name" />
-                    </Form.Item>
-
-                    <Form.Item
-                        label="Role"
-                        name="roleId"
-                    >
-                        <Select
-                            placeholder="Select a role (optional)"
-                            allowClear
-                            showSearch
-                            filterOption={(input, option) =>
-                                (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
-                            }
-                            options={roles.map(role => ({
-                                label: role.name,
-                                value: role.id,
-                            }))}
-                        />
-                    </Form.Item>
-
-                    <Form.Item
-                        label="Active"
-                        name="isActive"
-                        valuePropName="checked"
-                    >
-                        <Switch />
-                    </Form.Item>
-                </Form>
-            </Modal>
+            {/* 用户表单Modal（创建和编辑） */}
+            <UserFormModal
+                visible={formModal.visible}
+                mode={formModal.mode}
+                initialValues={formModal.user || undefined}
+                roles={roles}
+                onSubmit={handleFormSubmit}
+                onCancel={handleModalCancel}
+            />
         </div>
     );
 };

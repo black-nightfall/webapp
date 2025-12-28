@@ -2,12 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Table, Alert, Button } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import api from '../../services/api';
-
-interface Product {
-    id: number;
-    name: string;
-    price: number;
-}
+import type { Product } from './types';
 
 const ProductList: React.FC = () => {
     const [products, setProducts] = useState<Product[]>([]);

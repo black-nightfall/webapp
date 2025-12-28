@@ -2,7 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { Modal, Tree, Spin, message } from 'antd';
 import type { DataNode } from 'antd/es/tree';
 import type { Menu } from '../types';
-import { menuApi, roleApi } from '../../../services/roleApi';
+import { roleApi } from '../../../services/roleApi';
+import { menuApi } from '../../../services/menuApi';
 
 interface RolePermissionModalProps {
     visible: boolean;

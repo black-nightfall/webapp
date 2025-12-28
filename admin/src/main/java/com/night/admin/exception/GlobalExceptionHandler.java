@@ -3,6 +3,7 @@ package com.night.admin.exception;
 
 import com.night.common.dto.ApiResponse;
 import com.night.common.dto.ErrorCode;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -22,7 +23,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(BusinessException.class)
     public ApiResponse<Void> handleBusinessException(BusinessException e, 
-                                                       jakarta.servlet.http.HttpServletResponse response) {
+                                                       HttpServletResponse response) {
         log.warn("Business exception: code={}, message={}", e.getErrorCode().getCode(), e.getMessage());
         
         // Map ErrorCode to HTTP status code

@@ -9,8 +9,8 @@ import Login from './pages/Login';
 
 // Lazy load feature components for code splitting
 const Dashboard = lazy(() => import('./pages/Dashboard'));
-const UserList = lazy(() => import('./features/user/UserList'));
-const RoleList = lazy(() => import('./features/role/RoleList'));
+const UsersPage = lazy(() => import('./pages/UsersPage'));
+const RolesPage = lazy(() => import('./pages/RolesPage'));
 const ProductList = lazy(() => import('./features/product/ProductList'));
 const OrderCreate = lazy(() => import('./features/order/OrderCreate'));
 
@@ -47,7 +47,7 @@ const App: React.FC = () => {
                 path="users"
                 element={
                   <Suspense fallback={<LoadingFallback />}>
-                    <UserList />
+                    <UsersPage /> {/* Changed from UserList to UsersPage */}
                   </Suspense>
                 }
               />
@@ -55,7 +55,7 @@ const App: React.FC = () => {
                 path="roles"
                 element={
                   <Suspense fallback={<LoadingFallback />}>
-                    <RoleList />
+                    <RolesPage />
                   </Suspense>
                 }
               />
