@@ -19,7 +19,16 @@ dependencies {
     implementation(project(":common"))
     implementation(libs.bundles.springBootWebflux)
     implementation(libs.bundles.jackson)
+    
+    // Reactive Database (R2DBC)
+    implementation("org.springframework.boot:spring-boot-starter-data-r2dbc")
+    implementation("org.postgresql:r2dbc-postgresql")
+    
+    // Reactive Cache (Redis)
+    implementation("org.springframework.boot:spring-boot-starter-data-redis-reactive")
+
     testImplementation(libs.bundles.testingKotlinComplete)
+    testImplementation("io.projectreactor:reactor-test")
 }
 
 kotlin {
