@@ -19,11 +19,11 @@ spring:
       password: changeme
       timeout: 3000ms
 
-  # Schema Init (R2DBC does not auto-run schema.sql by default in all versions, but we can try)
-  sql:
-    init:
-      mode: always
-      schema-locations: classpath:schema.sql
+  # Schema Init (Managed by Flyway in Infra)
+  # sql:
+  #   init:
+  #     mode: always
+  #     schema-locations: classpath:schema.sql
 
 server:
   port: 8080

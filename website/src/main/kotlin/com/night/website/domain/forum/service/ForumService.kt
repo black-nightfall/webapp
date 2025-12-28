@@ -1,15 +1,14 @@
-package com.night.website.application
+package com.night.website.domain.forum.service
 
-import com.night.website.domain.ForumPost
-import com.night.website.domain.User
-import com.night.website.infrastructure.persistence.ForumPostRepository
-import com.night.website.infrastructure.persistence.UserRepository
+import com.night.website.domain.forum.entity.ForumPost
+import com.night.website.domain.forum.repository.ForumPostRepository
+import com.night.website.domain.user.repository.UserRepository
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.reactive.asFlow
+import kotlinx.coroutines.reactor.awaitSingle
 import kotlinx.coroutines.reactor.awaitSingleOrNull
 import org.springframework.stereotype.Service
-import java.time.LocalDate
 
 @Service
 class ForumService(
@@ -24,7 +23,7 @@ class ForumService(
         }
         .toList()
 
-    suspend fun getById(id: String): ForumPost? {
+    suspend fun getById(id: Long): ForumPost? {
         val post = forumPostRepository.findById(id).awaitSingleOrNull() ?: return null
         val user = userRepository.findById(post.authorId).awaitSingleOrNull()
         return post.copy(author = user)

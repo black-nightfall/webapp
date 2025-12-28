@@ -1,10 +1,10 @@
 package com.night.website.interfaces.handler
 
-import com.night.website.domain.LoginRequest
-import com.night.website.domain.RegisterRequest
-import com.night.website.application.AuthService
-import com.night.website.application.ForumService
-import com.night.website.application.NewsService
+import com.night.website.domain.auth.service.AuthService
+import com.night.website.domain.auth.service.LoginRequest
+import com.night.website.domain.auth.service.RegisterRequest
+import com.night.website.domain.forum.service.ForumService
+import com.night.website.domain.news.service.NewsService
 import org.springframework.stereotype.Component
 import org.springframework.web.reactive.function.server.*
 
@@ -15,12 +15,16 @@ class NewsHandler(private val newsService: NewsService) {
     }
 
     suspend fun getById(request: ServerRequest): ServerResponse {
-        val id = request.pathVariable("id")
-        val item = newsService.getById(id)
-        return if (item != null) {
-            ServerResponse.ok().bodyValueAndAwait(item)
+        val id = request.pathVariable("id").toLongOrNull()
+        return if (id != null) {
+            val item = newsService.getById(id)
+            if (item != null) {
+                ServerResponse.ok().bodyValueAndAwait(item)
+            } else {
+                ServerResponse.notFound().buildAndAwait()
+            }
         } else {
-            ServerResponse.notFound().buildAndAwait()
+             ServerResponse.badRequest().buildAndAwait()
         }
     }
 }
@@ -32,12 +36,16 @@ class ForumHandler(private val forumService: ForumService) {
     }
 
     suspend fun getById(request: ServerRequest): ServerResponse {
-        val id = request.pathVariable("id")
-        val post = forumService.getById(id)
-        return if (post != null) {
-            ServerResponse.ok().bodyValueAndAwait(post)
+        val id = request.pathVariable("id").toLongOrNull()
+        return if (id != null) {
+            val post = forumService.getById(id)
+            if (post != null) {
+                ServerResponse.ok().bodyValueAndAwait(post)
+            } else {
+                ServerResponse.notFound().buildAndAwait()
+            }
         } else {
-            ServerResponse.notFound().buildAndAwait()
+             ServerResponse.badRequest().buildAndAwait()
         }
     }
 }

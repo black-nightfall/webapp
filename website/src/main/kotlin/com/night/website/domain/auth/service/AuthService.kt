@@ -1,13 +1,13 @@
-package com.night.website.application
+package com.night.website.domain.auth.service
 
-import com.night.website.domain.LoginRequest
-import com.night.website.domain.LoginResponse
-import com.night.website.domain.RegisterRequest
-import com.night.website.domain.User
-import com.night.website.infrastructure.persistence.UserRepository
+import com.night.website.domain.user.entity.User
+import com.night.website.domain.user.repository.UserRepository
 import kotlinx.coroutines.reactor.awaitSingle
 import org.springframework.stereotype.Service
-import java.util.UUID
+
+data class LoginRequest(val email: String)
+data class LoginResponse(val token: String, val user: User)
+data class RegisterRequest(val name: String, val email: String)
 
 @Service
 class AuthService(private val userRepository: UserRepository) {
