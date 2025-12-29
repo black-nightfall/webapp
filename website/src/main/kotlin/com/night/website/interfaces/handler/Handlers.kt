@@ -27,6 +27,33 @@ class NewsHandler(private val newsService: NewsService) {
              ServerResponse.badRequest().buildAndAwait()
         }
     }
+
+    suspend fun create(request: ServerRequest): ServerResponse {
+        val newsItem = request.awaitBody<com.night.website.domain.news.entity.NewsItem>()
+        val created = newsService.create(newsItem)
+        return ServerResponse.ok().bodyValueAndAwait(created)
+    }
+
+    suspend fun update(request: ServerRequest): ServerResponse {
+        val id = request.pathVariable("id").toLongOrNull()
+        if (id == null) return ServerResponse.badRequest().buildAndAwait()
+        
+        val newsItem = request.awaitBody<com.night.website.domain.news.entity.NewsItem>()
+        val updated = newsService.update(id, newsItem)
+        return if (updated != null) {
+             ServerResponse.ok().bodyValueAndAwait(updated)
+        } else {
+             ServerResponse.notFound().buildAndAwait()
+        }
+    }
+
+    suspend fun delete(request: ServerRequest): ServerResponse {
+        val id = request.pathVariable("id").toLongOrNull()
+        if (id == null) return ServerResponse.badRequest().buildAndAwait()
+        
+        newsService.delete(id)
+        return ServerResponse.ok().buildAndAwait()
+    }
 }
 
 @Component
@@ -47,6 +74,33 @@ class ForumHandler(private val forumService: ForumService) {
         } else {
              ServerResponse.badRequest().buildAndAwait()
         }
+    }
+
+    suspend fun create(request: ServerRequest): ServerResponse {
+        val post = request.awaitBody<com.night.website.domain.forum.entity.ForumPost>()
+        val created = forumService.create(post)
+        return ServerResponse.ok().bodyValueAndAwait(created)
+    }
+
+    suspend fun update(request: ServerRequest): ServerResponse {
+        val id = request.pathVariable("id").toLongOrNull()
+        if (id == null) return ServerResponse.badRequest().buildAndAwait()
+        
+        val post = request.awaitBody<com.night.website.domain.forum.entity.ForumPost>()
+        val updated = forumService.update(id, post)
+        return if (updated != null) {
+             ServerResponse.ok().bodyValueAndAwait(updated)
+        } else {
+             ServerResponse.notFound().buildAndAwait()
+        }
+    }
+
+    suspend fun delete(request: ServerRequest): ServerResponse {
+        val id = request.pathVariable("id").toLongOrNull()
+        if (id == null) return ServerResponse.badRequest().buildAndAwait()
+        
+        forumService.delete(id)
+        return ServerResponse.ok().buildAndAwait()
     }
 }
 

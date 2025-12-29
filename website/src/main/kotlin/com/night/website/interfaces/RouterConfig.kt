@@ -22,10 +22,16 @@ class RouterConfig(
                 "/news".nest {
                     GET("", newsHandler::getAll)
                     GET("/{id}", newsHandler::getById)
+                    POST("", newsHandler::create)
+                    PUT("/{id}", newsHandler::update)
+                    DELETE("/{id}", newsHandler::delete)
                 }
                 "/forum".nest {
                     GET("", forumHandler::getAll)
                     GET("/{id}", forumHandler::getById)
+                    POST("", forumHandler::create)
+                    PUT("/{id}", forumHandler::update)
+                    DELETE("/{id}", forumHandler::delete)
                 }
                 "/auth".nest {
                     POST("/login", authHandler::login)

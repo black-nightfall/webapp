@@ -28,4 +28,16 @@ class ForumService(
         val user = userRepository.findById(post.authorId).awaitSingleOrNull()
         return post.copy(author = user)
     }
+
+    suspend fun create(forumPost: ForumPost): ForumPost = forumPostRepository.save(forumPost).awaitSingle()
+
+    suspend fun update(id: Long, forumPost: ForumPost): ForumPost? {
+        val existing = forumPostRepository.findById(id).awaitSingleOrNull() ?: return null
+        val toSave = forumPost.copy(id = id, createdAt = existing.createdAt)
+        return forumPostRepository.save(toSave).awaitSingle()
+    }
+
+    suspend fun delete(id: Long) {
+        forumPostRepository.deleteById(id).awaitSingleOrNull()
+    }
 }
