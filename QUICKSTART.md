@@ -232,8 +232,236 @@ echo $SPRING_PROFILES_ACTIVE
 - 设置 Git hooks
 - 配置 CI/CD
 
+---
+
+## 🌐 Website 模块快速开始
+
+Website 模块是面向用户的新闻和论坛前端应用的后端 API，使用 **Spring WebFlux** (Reactor + Kotlin Coroutines) 和 **R2DBC**。
+
+### 1. 启动 Website 后端
+
+```bash
+# 确保数据库和 Redis 已启动（复用 admin 的基础设施）
+cd infra/docker
+./start-dev.sh
+
+# 启动 Website 应用
+cd ../..
+./gradlew :website:bootRun
+```
+
+访问: `http://localhost:8080/api/news`
+
+### 2. 创建你的第一个 API 端点 (以 Products 为例)
+
+假设我们要为 "宠物用品" 添加一个新的 API 模块。
+
+#### 步骤 1: 创建 Domain 模块结构
+
+```bash
+# 创建目录结构
+mkdir -p website/src/main/kotlin/com/night/website/domain/product/entity
+mkdir -p website/src/main/kotlin/com/night/website/domain/product/repository
+mkdir -p website/src/main/kotlin/com/night/website/domain/product/service
+```
+
+#### 步骤 2: 定义 Entity (实体)
+
+```kotlin
+// website/src/main/kotlin/com/night/website/domain/product/entity/Product.kt
+package com.night.website.domain.product.entity
+
+import org.springframework.data.annotation.CreatedDate
+import org.springframework.data.annotation.Id
+import org.springframework.data.annotation.LastModifiedDate
+import org.springframework.data.relational.core.mapping.Table
+import java.math.BigDecimal
+import java.time.LocalDateTime
+
+@Table("products")
+data class Product(
+    @Id
+    val id: Long? = null,
+    val name: String,
+    val description: String,
+    val price: BigDecimal,
+    val imageUrl: String? = null,
+    
+    @CreatedDate
+    val createdAt: LocalDateTime? = null,
+    
+    @LastModifiedDate
+    val updatedAt: LocalDateTime? = null
+)
+```
+
+#### 步骤 3: 创建 Repository
+
+```kotlin
+// website/src/main/kotlin/com/night/website/domain/product/repository/ProductRepository.kt
+package com.night.website.domain.product.repository
+
+import com.night.website.domain.product.entity.Product
+import org.springframework.data.repository.reactive.ReactiveCrudRepository
+import org.springframework.stereotype.Repository
+
+@Repository
+interface ProductRepository : ReactiveCrudRepository<Product, Long>
+```
+
+#### 步骤 4: 实现 Service
+
+```kotlin
+// website/src/main/kotlin/com/night/website/domain/product/service/ProductService.kt
+package com.night.website.domain.product.service
+
+import com.night.website.domain.product.entity.Product
+import com.night.website.domain.product.repository.ProductRepository
+import kotlinx.coroutines.reactor.awaitSingle
+import kotlinx.coroutines.reactor.awaitSingleOrNull
+import org.springframework.stereotype.Service
+
+@Service
+class ProductService(private val productRepository: ProductRepository) {
+
+    suspend fun getAll(): List<Product> = 
+        productRepository.findAll().collectList().awaitSingle()
+    
+    suspend fun getById(id: Long): Product? = 
+        productRepository.findById(id).awaitSingleOrNull()
+    
+    suspend fun create(product: Product): Product = 
+        productRepository.save(product).awaitSingle()
+}
+```
+
+#### 步骤 5: 添加 Handler
+
+```kotlin
+// website/src/main/kotlin/com/night/website/interfaces/handler/ProductHandler.kt
+package com.night.website.interfaces.handler
+
+import com.night.website.domain.product.entity.Product
+import com.night.website.domain.product.service.ProductService
+import org.springframework.stereotype.Component
+import org.springframework.web.reactive.function.server.*
+
+@Component
+class ProductHandler(private val productService: ProductService) {
+    
+    suspend fun getAll(request: ServerRequest): ServerResponse {
+        return ServerResponse.ok().bodyValueAndAwait(productService.getAll())
+    }
+
+    suspend fun getById(request: ServerRequest): ServerResponse {
+        val id = request.pathVariable("id").toLongOrNull()
+        return if (id != null) {
+            val product = productService.getById(id)
+            if (product != null) {
+                ServerResponse.ok().bodyValueAndAwait(product)
+            } else {
+                ServerResponse.notFound().buildAndAwait()
+            }
+        } else {
+            ServerResponse.badRequest().buildAndAwait()
+        }
+    }
+    
+    suspend fun create(request: ServerRequest): ServerResponse {
+        val product = request.awaitBody<Product>()
+        val created = productService.create(product)
+        return ServerResponse.ok().bodyValueAndAwait(created)
+    }
+}
+```
+
+#### 步骤 6: 注册路由
+
+```kotlin
+// 在 website/src/main/kotlin/com/night/website/interfaces/RouterConfig.kt 中添加
+
+import com.night.website.interfaces.handler.ProductHandler
+
+@Configuration
+class RouterConfig(
+    // ... existing handlers
+    private val productHandler: ProductHandler
+) {
+
+    @Bean
+    fun apiRouter() = coRouter {
+        accept(MediaType.APPLICATION_JSON).nest {
+            "/api".nest {
+                // ... existing routes
+                "/products".nest {
+                    GET("", productHandler::getAll)
+                    GET("/{id}", productHandler::getById)
+                    POST("", productHandler::create)
+                }
+            }
+        }
+    }
+}
+```
+
+#### 步骤 7: 运行并测试
+
+```bash
+# 重启应用
+./gradlew :website:bootRun
+
+# 测试 API
+curl http://localhost:8080/api/products
+
+# 创建产品
+curl -X POST http://localhost:8080/api/products \
+  -H "Content-Type: application/json" \
+  -d '{"name":"猫粮","description":"营养丰富","price":99.99}'
+```
+
+### 📋 Website 开发规范
+
+#### ✅ 必须 (Dos)
+
+1. **模块化设计**: 每个功能模块（如 `news`, `forum`, `product`）必须有独立的 `entity`, `repository`, `service` 包。
+2. **Reactive 编程**: 所有 I/O 操作必须使用 `suspend` 函数和 Kotlin Coroutines。
+3. **Audit 字段**: 所有实体必须包含 `createdAt` 和 `updatedAt` 字段（使用 `@CreatedDate` 和 `@LastModifiedDate`）。
+4. **ID 类型**: 使用 `Long` 作为主键类型（对应数据库 `bigint`）。
+5. **错误处理**: Handler 中必须处理 `null` 返回和无效 ID。
+
+#### ❌ 禁止 (Don'ts)
+
+1. **禁止阻塞调用**: 不要使用 `block()`, `blockFirst()`, `blockLast()`。
+   - ❌ `repository.findAll().collectList().block()`
+   - ✅ `repository.findAll().collectList().awaitSingle()`
+
+2. **禁止混用 Reactor 和 Coroutines**: 在 `suspend` 函数中使用 `.asFlow()` 和 `.awaitXxx()`。
+   - ❌ `repository.findAll().map { ... }.collectList().awaitSingle()` (Flux.map 内不能直接用 suspend)
+   - ✅ `repository.findAll().asFlow().map { ... }.toList()`
+
+3. **禁止硬编码数据库连接**: 所有配置必须在 `application.yml` 中。
+
+4. **禁止跨模块直接访问 Repository**: Service 层是唯一可以访问 Repository 的地方。
+
+5. **禁止在 Entity 中添加业务逻辑**: Entity 应该是纯数据类。
+
+### 🧪 测试你的 API
+
+```bash
+# 编译检查
+./gradlew :website:classes
+
+# 运行测试（如果有）
+./gradlew :website:test
+
+# 启动应用
+./gradlew :website:bootRun
+```
+
 ## 相关文档
 
 - [Docker 环境配置详细文档](./infra/docker/README.md)
 - [密码工具类使用指南](./admin/PASSWORD_UTIL_GUIDE.md)
+- [前端开发工作流](./website/frontend/WORKFLOW_CN.md)
 - [API 文档](./docs/)
+
