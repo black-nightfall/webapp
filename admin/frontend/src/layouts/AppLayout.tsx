@@ -1,14 +1,8 @@
 import React, { useState } from 'react';
 import { Layout, Menu, theme } from 'antd';
-import {
-    UserOutlined,
-    ShoppingOutlined,
-    DashboardOutlined,
-    OrderedListOutlined,
-    SafetyCertificateOutlined,
-} from '@ant-design/icons';
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 import UserDropdown from '../components/UserDropdown';
+import { getMenuItems } from '../routes';
 
 const { Header, Content, Footer, Sider } = Layout;
 
@@ -20,33 +14,8 @@ const AppLayout: React.FC = () => {
     const navigate = useNavigate();
     const location = useLocation();
 
-    const items = [
-        {
-            key: '/',
-            icon: <DashboardOutlined />,
-            label: 'Dashboard',
-        },
-        {
-            key: '/users',
-            icon: <UserOutlined />,
-            label: 'Users',
-        },
-        {
-            key: '/roles',
-            icon: <SafetyCertificateOutlined />,
-            label: 'Roles',
-        },
-        {
-            key: '/products',
-            icon: <ShoppingOutlined />,
-            label: 'Products',
-        },
-        {
-            key: '/orders',
-            icon: <OrderedListOutlined />,
-            label: 'Orders',
-        },
-    ];
+    // 从路由配置自动生成菜单项
+    const menuItems = getMenuItems();
 
     return (
         <Layout style={{ minHeight: '100vh' }}>
@@ -57,7 +26,7 @@ const AppLayout: React.FC = () => {
                     defaultSelectedKeys={['/']}
                     selectedKeys={[location.pathname]}
                     mode="inline"
-                    items={items}
+                    items={menuItems as any}
                     onClick={(e) => navigate(e.key)}
                 />
             </Sider>

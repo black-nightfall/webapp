@@ -1,82 +1,15 @@
-import React, { lazy, Suspense } from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import { Spin } from 'antd';
+import React from 'react';
+import { BrowserRouter } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
-import ProtectedRoute from './components/ProtectedRoute';
 import ErrorBoundary from './components/ErrorBoundary';
-import AppLayout from './layouts/AppLayout';
-import Login from './pages/Login';
-
-// Lazy load feature components for code splitting
-const Dashboard = lazy(() => import('./pages/Dashboard'));
-const UsersPage = lazy(() => import('./pages/UsersPage'));
-const RolesPage = lazy(() => import('./pages/RolesPage'));
-const ProductList = lazy(() => import('./features/product/ProductList'));
-const OrderCreate = lazy(() => import('./features/order/OrderCreate'));
-
-const LoadingFallback = () => (
-  <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '400px' }}>
-    <Spin size="large" />
-  </div>
-);
+import { renderRoutes } from './routes';
 
 const App: React.FC = () => {
   return (
     <ErrorBoundary>
       <AuthProvider>
         <BrowserRouter>
-          <Routes>
-            <Route path="/login" element={<Login />} />
-            <Route
-              path="/"
-              element={
-                <ProtectedRoute>
-                  <AppLayout />
-                </ProtectedRoute>
-              }
-            >
-              <Route
-                index
-                element={
-                  <Suspense fallback={<LoadingFallback />}>
-                    <Dashboard />
-                  </Suspense>
-                }
-              />
-              <Route
-                path="users"
-                element={
-                  <Suspense fallback={<LoadingFallback />}>
-                    <UsersPage /> {/* Changed from UserList to UsersPage */}
-                  </Suspense>
-                }
-              />
-              <Route
-                path="roles"
-                element={
-                  <Suspense fallback={<LoadingFallback />}>
-                    <RolesPage />
-                  </Suspense>
-                }
-              />
-              <Route
-                path="products"
-                element={
-                  <Suspense fallback={<LoadingFallback />}>
-                    <ProductList />
-                  </Suspense>
-                }
-              />
-              <Route
-                path="orders"
-                element={
-                  <Suspense fallback={<LoadingFallback />}>
-                    <OrderCreate />
-                  </Suspense>
-                }
-              />
-            </Route>
-          </Routes>
+          {renderRoutes()}
         </BrowserRouter>
       </AuthProvider>
     </ErrorBoundary>
