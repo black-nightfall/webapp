@@ -4,7 +4,7 @@ spring:
   docker:
     compose:
       project-name: admin-dev
-      file: ./infra/docker/docker-compose.yml
+      file: ${user.dir}/infra/docker/docker-compose.yml
       profiles:
         active: dev
   # 数据库配置

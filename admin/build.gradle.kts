@@ -1,3 +1,5 @@
+import org.springframework.boot.gradle.tasks.run.BootRun
+
 plugins {
     id("java")
     alias(libs.plugins.springBoot)
@@ -25,7 +27,7 @@ dependencies {
     implementation(libs.spring.data.redis)
     
     // Security & JWT
-    implementation("org.springframework.boot:spring-boot-starter-security")
+    implementation(libs.springBootStarterSecurity)
     implementation(libs.bundles.jwt)
     
     // Lombok
@@ -36,13 +38,15 @@ dependencies {
     implementation(libs.springBootStarterValidation)
     
     developmentOnly(libs.springBootDockerCompose)
-    testImplementation(libs.springBootDockerCompose)  // 添加到测试依赖
+    testImplementation(libs.springBootDockerCompose)
     
     // Testing
     testImplementation(libs.bundles.testingSpringWebComplete)
     testImplementation(libs.spring.security.test)
 }
-
+tasks.named<BootRun>("bootRun") {
+    workingDir = rootProject.projectDir
+}
 tasks.withType<Test> {
     useJUnitPlatform()
 }

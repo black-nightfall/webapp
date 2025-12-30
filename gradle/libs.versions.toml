@@ -6,9 +6,7 @@ kotlinPlugin = "2.2.21"
 # Spring Boot & Spring
 springBoot = "4.0.0"
 springBootPlugin = "4.0.0"
-springDependencyManagement = "1.1.7"
 springDependencyManagementPlugin = "1.1.7"
-spring-framework = "6.1.0"
 
 # Kotlin & Coroutines
 kotlinReflect = "2.2.21"
@@ -28,7 +26,6 @@ junitPlatform = "1.10.1"
 mockito = "5.7.0"
 kotest = "5.8.0"
 
-# Database & ORM (可选，为未来扩展预留)
 jpa = "3.1.0"
 liquibase = "4.26.0"
 postgresql = "42.7.1"
@@ -41,9 +38,9 @@ springBootStarterWebflux = { group = "org.springframework.boot", name = "spring-
 springBootStarterValidation = { group = "org.springframework.boot", name = "spring-boot-starter-validation", version.ref = "springBoot" }
 springBootStarterLogging = { group = "org.springframework.boot", name = "spring-boot-starter-logging", version.ref = "springBoot" }
 springBootDockerCompose = { group = "org.springframework.boot", name = "spring-boot-docker-compose", version.ref = "springBoot" }
+springBootStarterSecurity = { group = "org.springframework.boot", name = "spring-boot-starter-security", version.ref = "springBoot" }
 
-# Spring Framework
-spring-webflux = { group = "org.springframework", name = "spring-webflux", version.ref = "spring-framework" }
+
 
 # Kotlin
 kotlinReflect = { group = "org.jetbrains.kotlin", name = "kotlin-reflect", version.ref = "kotlinReflect" }
