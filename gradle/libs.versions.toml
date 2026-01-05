@@ -1,19 +1,16 @@
 [versions]
 # Language & Build
 kotlin = "2.2.21"
-kotlinPlugin = "2.2.21"
 
 # Spring Boot & Spring
 springBoot = "4.0.0"
-springBootPlugin = "4.0.0"
-springDependencyManagementPlugin = "1.1.7"
+springDependencyManagement = "1.1.7"
 
 # Kotlin & Coroutines
 kotlinReflect = "2.2.21"
 kotlinxCoroutines = "1.8.0"
 
 # Reactor
-reactorBom = "2024.0.0"
 reactorKotlin = "1.2.2"
 
 # Jackson
@@ -22,14 +19,12 @@ jacksonKotlin = "2.18.0"
 
 # Testing
 junitJupiter = "5.10.0"
-junitPlatform = "1.10.1"
 mockito = "5.7.0"
-kotest = "5.8.0"
 
-jpa = "3.1.0"
-liquibase = "4.26.0"
 postgresql = "42.7.1"
-h2 = "2.2.224"
+
+# R2DBC (Reactive Database)
+r2dbcPostgresql = "1.0.9.RELEASE"
 
 [libraries]
 # Spring Boot Starters
@@ -39,6 +34,7 @@ springBootStarterValidation = { group = "org.springframework.boot", name = "spri
 springBootStarterLogging = { group = "org.springframework.boot", name = "spring-boot-starter-logging", version.ref = "springBoot" }
 springBootDockerCompose = { group = "org.springframework.boot", name = "spring-boot-docker-compose", version.ref = "springBoot" }
 springBootStarterSecurity = { group = "org.springframework.boot", name = "spring-boot-starter-security", version.ref = "springBoot" }
+springBootDevtools = { group = "org.springframework.boot", name = "spring-boot-devtools", version.ref = "springBoot" }
 
 
 
@@ -47,44 +43,28 @@ kotlinReflect = { group = "org.jetbrains.kotlin", name = "kotlin-reflect", versi
 kotlinStdlib = { group = "org.jetbrains.kotlin", name = "kotlin-stdlib" }
 
 # Coroutines
-kotlinxCoroutines-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "kotlinxCoroutines" }
 kotlinxCoroutines-reactor = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-reactor", version.ref = "kotlinxCoroutines" }
-kotlinxCoroutines-slf4j = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-slf4j", version.ref = "kotlinxCoroutines" }
 
 # Reactor
 reactorKotlinExtensions = { group = "io.projectreactor.kotlin", name = "reactor-kotlin-extensions", version.ref = "reactorKotlin" }
-reactorCore = { group = "io.projectreactor", name = "reactor-core", version.ref = "reactorBom" }
 
 # Jackson
 jacksonModuleKotlin = { group = "com.fasterxml.jackson.module", name = "jackson-module-kotlin", version.ref = "jacksonKotlin" }
 jacksonDatabind = { group = "com.fasterxml.jackson.core", name = "jackson-databind", version.ref = "jacksonCore" }
 jacksonJsr310 = { group = "com.fasterxml.jackson.datatype", name = "jackson-datatype-jsr310", version.ref = "jacksonCore" }
 
-# Logging (SLF4J is included with spring-boot-starter-logging)
-logback = { group = "ch.qos.logback", name = "logback-classic", version = "1.4.14" }
-
 # Database & ORM (optional for future use)
-liquibase-core = { group = "org.liquibase", name = "liquibase-core", version.ref = "liquibase" }
 postgresql-driver = { group = "org.postgresql", name = "postgresql", version.ref = "postgresql" }
-h2-driver = { group = "com.h2database", name = "h2", version.ref = "h2" }
 
-# Testing - JUnit
-junit-jupiter-api = { group = "org.junit.jupiter", name = "junit-jupiter-api", version.ref = "junitJupiter" }
-junit-jupiter-engine = { group = "org.junit.jupiter", name = "junit-jupiter-engine", version.ref = "junitJupiter" }
 junit-jupiter-params = { group = "org.junit.jupiter", name = "junit-jupiter-params", version.ref = "junitJupiter" }
-junit-platform-launcher = { group = "org.junit.platform", name = "junit-platform-launcher", version.ref = "junitPlatform" }
 
 # Testing - Spring Boot
 springBootStarterTest = { group = "org.springframework.boot", name = "spring-boot-starter-test", version.ref = "springBoot" }
-springBootStarterWebfluxTest = { group = "org.springframework.boot", name = "spring-boot-starter-webflux", version.ref = "springBoot" }
 
 # Testing - Kotlin
 kotlinTest = { group = "org.jetbrains.kotlin", name = "kotlin-test-junit5", version.ref = "kotlin" }
 kotlinxCoroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "kotlinxCoroutines" }
 
-# Testing - Kotest (alternative testing framework for Kotlin)
-kotest-runner-junit5 = { group = "io.kotest", name = "kotest-runner-junit5", version.ref = "kotest" }
-kotest-assertions-core = { group = "io.kotest", name = "kotest-assertions-core", version.ref = "kotest" }
 
 # Testing - Mockito
 mockito-core = { group = "org.mockito", name = "mockito-core", version.ref = "mockito" }
@@ -107,6 +87,16 @@ spring-data-redis = { group = "org.springframework.boot", name = "spring-boot-st
 
 # Spring Security
 spring-security-test = { group = "org.springframework.security", name = "spring-security-test", version = "6.2.0" }
+
+# R2DBC (Reactive Database)
+spring-data-r2dbc = { group = "org.springframework.boot", name = "spring-boot-starter-data-r2dbc", version.ref = "springBoot" }
+r2dbc-postgresql = { group = "org.postgresql", name = "r2dbc-postgresql", version.ref = "r2dbcPostgresql" }
+
+# Redis Reactive
+spring-data-redis-reactive = { group = "org.springframework.boot", name = "spring-boot-starter-data-redis-reactive", version.ref = "springBoot" }
+
+# Reactor Test
+reactor-test = { group = "io.projectreactor", name = "reactor-test" }
 
 [bundles]
 # JWT Bundle
@@ -138,11 +128,7 @@ kotlin = [
     "kotlinStdlib"
 ]
 
-# Kotlin + Spring Bundle (for Kotlin projects)
-kotlinSpring = [
-    "kotlinReflect",
-    "kotlinStdlib"
-]
+
 
 # Jackson Bundle
 jackson = [
@@ -151,48 +137,7 @@ jackson = [
     "jacksonJsr310"
 ]
 
-# Coroutines Bundle
-coroutines = [
-    "kotlinxCoroutines-core",
-    "kotlinxCoroutines-reactor",
-    "kotlinxCoroutines-slf4j"
-]
 
-# Reactor Bundle
-reactor = [
-    "reactorCore",
-    "reactorKotlinExtensions",
-    "kotlinxCoroutines-reactor"
-]
-
-# Testing Bundle - Common (JUnit)
-testingCommon = [
-    "junit-jupiter-api",
-    "junit-jupiter-engine",
-    "junit-jupiter-params",
-    "junit-platform-launcher"
-]
-
-# Testing Bundle - Spring Web
-testingSpringWeb = [
-    "springBootStarterTest",
-    "mockito-core",
-    "mockito-junit-jupiter"
-]
-
-# Testing Bundle - Kotlin
-testingKotlin = [
-    "kotlinTest",
-    "kotlinxCoroutines-test",
-    "mockito-kotlin"
-]
-
-# Testing Bundle - Kotest (alternative)
-testingKotest = [
-    "kotest-runner-junit5",
-    "kotest-assertions-core",
-    "mockito-kotlin"
-]
 
 # Testing Bundle - Complete (for Web projects)
 testingSpringWebComplete = [
@@ -211,17 +156,9 @@ testingKotlinComplete = [
     "junit-jupiter-params"
 ]
 
-# Database Bundle
-database = [
-    "liquibase-core",
-    "postgresql-driver",
-    "h2-driver"
-]
-
 [plugins]
-kotlin = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlinPlugin" }
-kotlinSpring = { id = "org.jetbrains.kotlin.plugin.spring", version.ref = "kotlinPlugin" }
-kotlinJpa = { id = "org.jetbrains.kotlin.plugin.jpa", version.ref = "kotlinPlugin" }
-springBoot = { id = "org.springframework.boot", version.ref = "springBootPlugin" }
-springDependencyManagement = { id = "io.spring.dependency-management", version.ref = "springDependencyManagementPlugin" }
+kotlin = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
+kotlinSpring = { id = "org.jetbrains.kotlin.plugin.spring", version.ref = "kotlin" }
+springBoot = { id = "org.springframework.boot", version.ref = "springBoot" }
+springDependencyManagement = { id = "io.spring.dependency-management", version.ref = "springDependencyManagement" }
 

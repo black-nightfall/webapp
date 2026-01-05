@@ -5,11 +5,11 @@ INSERT INTO role_info (id, name, description)
 VALUES (0,'ADMIN', '系统管理员，拥有所有权限')
     ON CONFLICT DO NOTHING;
 -- 插入初始用户数据
-u AS (
-    INSERT INTO user_info (uid,role_id, username, email, password_hash, full_name, is_active)
-    VALUES (gen_random_uuid(), 0, 'admin', 'admin@example.com', '$2a$10$NtwkCVIX.hL.83rcqPzC5upknYykY69WEdbDAXCslOLipqqtxjXFq', 'Super Admin', true)
+with u AS (
+INSERT INTO user_info (uid,role_id, username, email, password_hash, full_name, is_active)
+VALUES (gen_random_uuid(), 0, 'admin', 'admin@example.com', '$2a$10$NtwkCVIX.hL.83rcqPzC5upknYykY69WEdbDAXCslOLipqqtxjXFq', 'Super Admin', true)
     RETURNING id
-)
+    )
 
 
 -- 初始化权限菜单数据和管理员角色

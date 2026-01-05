@@ -37,6 +37,9 @@ dependencies {
     // Validation
     implementation(libs.springBootStarterValidation)
     
+    // Development Tools
+    developmentOnly(libs.springBootDevtools)
+    
     developmentOnly(libs.springBootDockerCompose)
     testImplementation(libs.springBootDockerCompose)
     

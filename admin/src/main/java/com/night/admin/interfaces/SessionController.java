@@ -12,13 +12,13 @@ import org.springframework.web.bind.annotation.*;
  * 用于管理员管理用户会话
  */
 @RestController
-@RequestMapping("/api/sessions")
+@RequestMapping("/sessions")
 @RequiredArgsConstructor
 @Slf4j
 public class SessionController {
-    
+
     private final TokenSessionService tokenSessionService;
-    
+
     /**
      * 获取用户会话信息
      */
@@ -36,7 +36,7 @@ public class SessionController {
             return ApiResponse.error(com.night.common.dto.ErrorCode.ACCESS_DENIED, "获取会话信息失败");
         }
     }
-    
+
     /**
      * 踢用户下线（T用户）
      */

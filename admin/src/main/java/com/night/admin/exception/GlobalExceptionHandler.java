@@ -1,6 +1,5 @@
 package com.night.admin.exception;
 
-
 import com.night.common.dto.ApiResponse;
 import com.night.common.dto.ErrorCode;
 import jakarta.servlet.http.HttpServletResponse;
@@ -10,6 +9,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import java.util.stream.Collectors;
 
@@ -19,20 +19,19 @@ import java.util.stream.Collectors;
 @RestControllerAdvice
 @Slf4j
 public class GlobalExceptionHandler {
-    
 
     @ExceptionHandler(BusinessException.class)
-    public ApiResponse<Void> handleBusinessException(BusinessException e, 
-                                                       HttpServletResponse response) {
+    public ApiResponse<Void> handleBusinessException(BusinessException e,
+            HttpServletResponse response) {
         log.warn("Business exception: code={}, message={}", e.getErrorCode().getCode(), e.getMessage());
-        
+
         // Map ErrorCode to HTTP status code
         HttpStatus httpStatus = mapErrorCodeToHttpStatus(e.getErrorCode());
         response.setStatus(httpStatus.value());
-        
+
         return ApiResponse.error(e.getErrorCode());
     }
-    
+
     /**
      * Map ErrorCode to appropriate HTTP status code
      */
@@ -40,24 +39,23 @@ public class GlobalExceptionHandler {
         return switch (errorCode) {
             // Authentication errors -> 401
             case INVALID_CREDENTIALS, TOKEN_EXPIRED, TOKEN_INVALID, UNAUTHORIZED -> HttpStatus.UNAUTHORIZED;
-            
+
             // Authorization/Access errors -> 403
             case ACCESS_DENIED, USER_DISABLED, FORBIDDEN -> HttpStatus.FORBIDDEN;
-            
+
             // Not found errors -> 404
             case NOT_FOUND, USER_NOT_FOUND, PRODUCT_NOT_FOUND, ORDER_NOT_FOUND -> HttpStatus.NOT_FOUND;
-            
+
             // Bad request errors -> 400
             case BAD_REQUEST -> HttpStatus.BAD_REQUEST;
-            
+
             // Server errors -> 500
             case INTERNAL_SERVER_ERROR -> HttpStatus.INTERNAL_SERVER_ERROR;
-            
+
             // All other business errors -> 400
             default -> HttpStatus.BAD_REQUEST;
         };
     }
-    
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
@@ -68,7 +66,19 @@ public class GlobalExceptionHandler {
         log.warn("Validation exception: {}", message);
         return ApiResponse.error(ErrorCode.BAD_REQUEST, message);
     }
-    
+
+    /**
+     * Handle 404 - API endpoint not found
+     * Provides user-friendly message instead of "No static resource" error
+     */
+//    @ExceptionHandler(NoResourceFoundException.class)
+//    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ApiResponse<Void> handleNoResourceFoundException(NoResourceFoundException e) {
+        String requestPath = e.getResourcePath();
+        String message = String.format("API endpoint not found: %s. Please check the URL for typos.", requestPath);
+        log.warn("API endpoint not found: {}", requestPath);
+        return ApiResponse.error(ErrorCode.NOT_FOUND, message);
+    }
 
     @ExceptionHandler(IllegalArgumentException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
