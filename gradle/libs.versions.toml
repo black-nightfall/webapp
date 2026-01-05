@@ -1,0 +1,164 @@
+[versions]
+# Language & Build
+kotlin = "2.2.21"
+
+# Spring Boot & Spring
+springBoot = "4.0.0"
+springDependencyManagement = "1.1.7"
+
+# Kotlin & Coroutines
+kotlinReflect = "2.2.21"
+kotlinxCoroutines = "1.8.0"
+
+# Reactor
+reactorKotlin = "1.2.2"
+
+# Jackson
+jacksonCore = "2.18.0"
+jacksonKotlin = "2.18.0"
+
+# Testing
+junitJupiter = "5.10.0"
+mockito = "5.7.0"
+
+postgresql = "42.7.1"
+
+# R2DBC (Reactive Database)
+r2dbcPostgresql = "1.0.9.RELEASE"
+
+[libraries]
+# Spring Boot Starters
+springBootStarterWeb = { group = "org.springframework.boot", name = "spring-boot-starter-web", version.ref = "springBoot" }
+springBootStarterWebflux = { group = "org.springframework.boot", name = "spring-boot-starter-webflux", version.ref = "springBoot" }
+springBootStarterValidation = { group = "org.springframework.boot", name = "spring-boot-starter-validation", version.ref = "springBoot" }
+springBootStarterLogging = { group = "org.springframework.boot", name = "spring-boot-starter-logging", version.ref = "springBoot" }
+springBootDockerCompose = { group = "org.springframework.boot", name = "spring-boot-docker-compose", version.ref = "springBoot" }
+springBootStarterSecurity = { group = "org.springframework.boot", name = "spring-boot-starter-security", version.ref = "springBoot" }
+springBootDevtools = { group = "org.springframework.boot", name = "spring-boot-devtools", version.ref = "springBoot" }
+
+
+
+# Kotlin
+kotlinReflect = { group = "org.jetbrains.kotlin", name = "kotlin-reflect", version.ref = "kotlinReflect" }
+kotlinStdlib = { group = "org.jetbrains.kotlin", name = "kotlin-stdlib" }
+
+# Coroutines
+kotlinxCoroutines-reactor = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-reactor", version.ref = "kotlinxCoroutines" }
+
+# Reactor
+reactorKotlinExtensions = { group = "io.projectreactor.kotlin", name = "reactor-kotlin-extensions", version.ref = "reactorKotlin" }
+
+# Jackson
+jacksonModuleKotlin = { group = "com.fasterxml.jackson.module", name = "jackson-module-kotlin", version.ref = "jacksonKotlin" }
+jacksonDatabind = { group = "com.fasterxml.jackson.core", name = "jackson-databind", version.ref = "jacksonCore" }
+jacksonJsr310 = { group = "com.fasterxml.jackson.datatype", name = "jackson-datatype-jsr310", version.ref = "jacksonCore" }
+
+# Database & ORM (optional for future use)
+postgresql-driver = { group = "org.postgresql", name = "postgresql", version.ref = "postgresql" }
+
+junit-jupiter-params = { group = "org.junit.jupiter", name = "junit-jupiter-params", version.ref = "junitJupiter" }
+
+# Testing - Spring Boot
+springBootStarterTest = { group = "org.springframework.boot", name = "spring-boot-starter-test", version.ref = "springBoot" }
+
+# Testing - Kotlin
+kotlinTest = { group = "org.jetbrains.kotlin", name = "kotlin-test-junit5", version.ref = "kotlin" }
+kotlinxCoroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "kotlinxCoroutines" }
+
+
+# Testing - Mockito
+mockito-core = { group = "org.mockito", name = "mockito-core", version.ref = "mockito" }
+mockito-junit-jupiter = { group = "org.mockito", name = "mockito-junit-jupiter", version.ref = "mockito" }
+mockito-kotlin = { group = "org.mockito.kotlin", name = "mockito-kotlin", version = "5.1.0" }
+
+# JWT
+jjwt-api = { group = "io.jsonwebtoken", name = "jjwt-api", version = "0.12.6" }
+jjwt-impl = { group = "io.jsonwebtoken", name = "jjwt-impl", version = "0.12.6" }
+jjwt-jackson = { group = "io.jsonwebtoken", name = "jjwt-jackson", version = "0.12.6" }
+
+# Lombok
+lombok = { group = "org.projectlombok", name = "lombok", version = "1.18.36" }
+
+# Spring Data JPA
+spring-data-jpa = { group = "org.springframework.boot", name = "spring-boot-starter-data-jpa", version.ref = "springBoot" }
+
+# Spring Data Redis
+spring-data-redis = { group = "org.springframework.boot", name = "spring-boot-starter-data-redis", version.ref = "springBoot" }
+
+# Spring Security
+spring-security-test = { group = "org.springframework.security", name = "spring-security-test", version = "6.2.0" }
+
+# R2DBC (Reactive Database)
+spring-data-r2dbc = { group = "org.springframework.boot", name = "spring-boot-starter-data-r2dbc", version.ref = "springBoot" }
+r2dbc-postgresql = { group = "org.postgresql", name = "r2dbc-postgresql", version.ref = "r2dbcPostgresql" }
+
+# Redis Reactive
+spring-data-redis-reactive = { group = "org.springframework.boot", name = "spring-boot-starter-data-redis-reactive", version.ref = "springBoot" }
+
+# Reactor Test
+reactor-test = { group = "io.projectreactor", name = "reactor-test" }
+
+[bundles]
+# JWT Bundle
+jwt = [
+    "jjwt-api",
+    "jjwt-impl",
+    "jjwt-jackson"
+]
+
+# Spring Boot Web Bundle
+springBootWeb = [
+    "springBootStarterWeb",
+    "springBootStarterValidation",
+    "springBootStarterLogging"
+]
+
+# Spring Boot Webflux Bundle
+springBootWebflux = [
+    "springBootStarterWebflux",
+    "springBootStarterValidation",
+    "springBootStarterLogging",
+    "reactorKotlinExtensions",
+    "kotlinxCoroutines-reactor"
+]
+
+# Kotlin Bundle
+kotlin = [
+    "kotlinReflect",
+    "kotlinStdlib"
+]
+
+
+
+# Jackson Bundle
+jackson = [
+    "jacksonDatabind",
+    "jacksonModuleKotlin",
+    "jacksonJsr310"
+]
+
+
+
+# Testing Bundle - Complete (for Web projects)
+testingSpringWebComplete = [
+    "springBootStarterTest",
+    "mockito-core",
+    "mockito-junit-jupiter",
+    "junit-jupiter-params"
+]
+
+# Testing Bundle - Complete (for Kotlin projects)
+testingKotlinComplete = [
+    "springBootStarterTest",
+    "kotlinTest",
+    "kotlinxCoroutines-test",
+    "mockito-kotlin",
+    "junit-jupiter-params"
+]
+
+[plugins]
+kotlin = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
+kotlinSpring = { id = "org.jetbrains.kotlin.plugin.spring", version.ref = "kotlin" }
+springBoot = { id = "org.springframework.boot", version.ref = "springBoot" }
+springDependencyManagement = { id = "io.spring.dependency-management", version.ref = "springDependencyManagement" }
+

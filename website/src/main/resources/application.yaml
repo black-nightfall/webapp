@@ -1,0 +1,11 @@
+spring:
+  application:
+    name: website
+  docker:
+    compose:
+      file: ./infra/docker/docker-compose.yml
+
+server:
+  port: 9090
+  servlet:
+    context-path: /website

@@ -1,0 +1,58 @@
+{
+    "HomePage": {
+        "title": "Paw-some News 🐾",
+        "description": "Daily dose of cute."
+    },
+    "News": {
+        "title": "Latest Furry Tales",
+        "readMore": "Read story",
+        "createPost": "Publish News",
+        "backHome": "Back Home",
+        "create": {
+            "title": "Breaking Mews! 📣",
+            "description": "Share the latest scoop.",
+            "form": {
+                "title": "Headline",
+                "category": "Category",
+                "content": "Story",
+                "submit": "Publish",
+                "back": "Back Home"
+            }
+        }
+    },
+    "Forum": {
+        "title": "Pet Community 💬",
+        "description": "Where fluff meets chat.",
+        "createPost": "New Post",
+        "backHome": "Back Home",
+        "create": {
+            "title": "New Discussion 🗨️",
+            "description": "Start a fur-iendly chat.",
+            "form": {
+                "title": "Topic",
+                "category": "Tag",
+                "content": "Message",
+                "submit": "Post",
+                "back": "Back to Forum"
+            }
+        },
+        "detail": {
+            "back": "Back to Forum",
+            "comments": "Comments"
+        }
+    },
+    "Auth": {
+        "login": "Login",
+        "register": "Register",
+        "email": "Email Address",
+        "password": "Password",
+        "name": "Full Name",
+        "confirmPassword": "Confirm Password",
+        "submitLogin": "Sign In",
+        "submitRegister": "Sign Up",
+        "haveAccount": "Already have an account? Login",
+        "noAccount": "No account? Register",
+        "welcomeBack": "Welcome Back! 👋",
+        "joinUs": "Join the Pack! 🐾"
+    }
+}

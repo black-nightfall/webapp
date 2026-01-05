@@ -1,0 +1,422 @@
+// Mock数据类型定义
+export interface MockUser {
+    id: number;
+    uid: string;
+    username: string;
+    email: string;
+    fullName: string;
+    isActive: boolean;
+    createdAt: string;
+    updatedAt: string;
+}
+
+export interface MockProduct {
+    id: number;
+    name: string;
+    price: number;
+    stockQuantity: number;
+    description?: string;
+    createdAt: string;
+    updatedAt: string;
+}
+
+export interface MockOrder {
+    id: number;
+    orderNumber: string;
+    userId: number;
+    totalAmount: number;
+    status: 'PENDING' | 'CONFIRMED' | 'SHIPPED' | 'DELIVERED' | 'CANCELLED';
+    createdAt: string;
+    updatedAt: string;
+}
+
+// Mock用户数据（扩展到15+条记录）
+export let mockUsers: MockUser[] = [
+    {
+        id: 1,
+        uid: '123e4567-e89b-12d3-a456-426614174000',
+        username: 'admin',
+        email: 'admin@example.com',
+        fullName: 'Administrator',
+        isActive: true,
+        createdAt: '2025-01-01T00:00:00',
+        updatedAt: '2025-01-01T00:00:00',
+    },
+    {
+        id: 2,
+        uid: '223e4567-e89b-12d3-a456-426614174001',
+        username: 'john_doe',
+        email: 'john@example.com',
+        fullName: 'John Doe',
+        isActive: true,
+        createdAt: '2025-01-02T00:00:00',
+        updatedAt: '2025-01-02T00:00:00',
+    },
+    {
+        id: 3,
+        uid: '323e4567-e89b-12d3-a456-426614174002',
+        username: 'jane_smith',
+        email: 'jane@company.com',
+        fullName: 'Jane Smith',
+        isActive: false,
+        createdAt: '2025-01-03T00:00:00',
+        updatedAt: '2025-01-03T00:00:00',
+    },
+    {
+        id: 4,
+        uid: '423e4567-e89b-12d3-a456-426614174003',
+        username: 'alice_wong',
+        email: 'alice.wong@tech.com',
+        fullName: 'Alice Wong',
+        isActive: true,
+        createdAt: '2025-01-04T00:00:00',
+        updatedAt: '2025-01-04T00:00:00',
+    },
+    {
+        id: 5,
+        uid: '523e4567-e89b-12d3-a456-426614174004',
+        username: 'bob_martin',
+        email: 'bob.m@startup.io',
+        fullName: 'Bob Martin',
+        isActive: true,
+        createdAt: '2025-01-05T00:00:00',
+        updatedAt: '2025-01-05T00:00:00',
+    },
+    {
+        id: 6,
+        uid: '623e4567-e89b-12d3-a456-426614174005',
+        username: 'charlie_brown',
+        email: 'charlie@email.com',
+        fullName: 'Charlie Brown',
+        isActive: false,
+        createdAt: '2025-01-06T00:00:00',
+        updatedAt: '2025-01-06T00:00:00',
+    },
+    {
+        id: 7,
+        uid: '723e4567-e89b-12d3-a456-426614174006',
+        username: 'diana_prince',
+        email: 'diana@heroes.com',
+        fullName: 'Diana Prince',
+        isActive: true,
+        createdAt: '2025-01-07T00:00:00',
+        updatedAt: '2025-01-07T00:00:00',
+    },
+    {
+        id: 8,
+        uid: '823e4567-e89b-12d3-a456-426614174007',
+        username: 'edward_norton',
+        email: 'edward.n@theater.org',
+        fullName: 'Edward Norton',
+        isActive: true,
+        createdAt: '2025-01-08T00:00:00',
+        updatedAt: '2025-01-08T00:00:00',
+    },
+    {
+        id: 9,
+        uid: '923e4567-e89b-12d3-a456-426614174008',
+        username: 'fiona_gallagher',
+        email: 'fiona@southside.com',
+        fullName: 'Fiona Gallagher',
+        isActive: false,
+        createdAt: '2025-01-09T00:00:00',
+        updatedAt: '2025-01-09T00:00:00',
+    },
+    {
+        id: 10,
+        uid: 'a23e4567-e89b-12d3-a456-426614174009',
+        username: 'george_miller',
+        email: 'george@movies.net',
+        fullName: 'George Miller',
+        isActive: true,
+        createdAt: '2025-01-10T00:00:00',
+        updatedAt: '2025-01-10T00:00:00',
+    },
+    {
+        id: 11,
+        uid: 'b23e4567-e89b-12d3-a456-426614174010',
+        username: 'helen_mirren',
+        email: 'helen@royaltheatre.uk',
+        fullName: 'Helen Mirren',
+        isActive: true,
+        createdAt: '2025-01-11T00:00:00',
+        updatedAt: '2025-01-11T00:00:00',
+    },
+    {
+        id: 12,
+        uid: 'c23e4567-e89b-12d3-a456-426614174011',
+        username: 'ian_mckellen',
+        email: 'ian@wizards.com',
+        fullName: 'Ian McKellen',
+        isActive: false,
+        createdAt: '2025-01-12T00:00:00',
+        updatedAt: '2025-01-12T00:00:00',
+    },
+    {
+        id: 13,
+        uid: 'd23e4567-e89b-12d3-a456-426614174012',
+        username: 'julia_roberts',
+        email: 'julia@hollywood.com',
+        fullName: 'Julia Roberts',
+        isActive: true,
+        createdAt: '2025-01-13T00:00:00',
+        updatedAt: '2025-01-13T00:00:00',
+    },
+    {
+        id: 14,
+        uid: 'e23e4567-e89b-12d3-a456-426614174013',
+        username: 'kevin_spacey',
+        email: 'kevin@films.net',
+        fullName: 'Kevin Spacey',
+        isActive: true,
+        createdAt: '2025-01-14T00:00:00',
+        updatedAt: '2025-01-14T00:00:00',
+    },
+    {
+        id: 15,
+        uid: 'f23e4567-e89b-12d3-a456-426614174014',
+        username: 'lisa_kudrow',
+        email: 'lisa@friends.tv',
+        fullName: 'Lisa Kudrow',
+        isActive: false,
+        createdAt: '2025-01-15T00:00:00',
+        updatedAt: '2025-01-15T00:00:00',
+    },
+    {
+        id: 16,
+        uid: 'g23e4567-e89b-12d3-a456-426614174015',
+        username: 'matt_damon',
+        email: 'matt@action.com',
+        fullName: 'Matt Damon',
+        isActive: true,
+        createdAt: '2025-01-16T00:00:00',
+        updatedAt: '2025-01-16T00:00:00',
+    },
+];
+
+// Mock商品数据
+export const mockProducts: MockProduct[] = [
+    {
+        id: 1,
+        name: 'Laptop Pro 2024',
+        price: 1299.99,
+        stockQuantity: 50,
+        description: 'High-performance laptop with 16GB RAM',
+        createdAt: '2025-01-01T00:00:00',
+        updatedAt: '2025-01-01T00:00:00',
+    },
+    {
+        id: 2,
+        name: 'Wireless Mouse',
+        price: 29.99,
+        stockQuantity: 200,
+        description: 'Ergonomic wireless mouse',
+        createdAt: '2025-01-02T00:00:00',
+        updatedAt: '2025-01-02T00:00:00',
+    },
+    {
+        id: 3,
+        name: 'Mechanical Keyboard',
+        price: 89.99,
+        stockQuantity: 75,
+        description: 'RGB mechanical keyboard',
+        createdAt: '2025-01-03T00:00:00',
+        updatedAt: '2025-01-03T00:00:00',
+    },
+];
+
+// Mock订单数据
+export const mockOrders: MockOrder[] = [
+    {
+        id: 1,
+        orderNumber: 'ORD20250101001',
+        userId: 2,
+        totalAmount: 1329.98,
+        status: 'DELIVERED',
+        createdAt: '2025-01-05T10:00:00',
+        updatedAt: '2025-01-10T15:30:00',
+    },
+    {
+        id: 2,
+        orderNumber: 'ORD20250102001',
+        userId: 3,
+        totalAmount: 119.98,
+        status: 'SHIPPED',
+        createdAt: '2025-01-08T14:20:00',
+        updatedAt: '2025-01-09T09:15:00',
+    },
+    {
+        id: 3,
+        orderNumber: 'ORD20250103001',
+        userId: 2,
+        totalAmount: 29.99,
+        status: 'PENDING',
+        createdAt: '2025-01-12T16:45:00',
+        updatedAt: '2025-01-12T16:45:00',
+    },
+];
+
+// Mock角色数据
+export interface MockRole {
+    id: number;
+    name: string;
+    description?: string;
+    createdAt: string;
+    updatedAt: string;
+}
+
+export let mockRoles: MockRole[] = [
+    {
+        id: 1,
+        name: '超级管理员',
+        description: '拥有系统所有权限',
+        createdAt: '2025-01-01T00:00:00',
+        updatedAt: '2025-01-01T00:00:00',
+    },
+    {
+        id: 2,
+        name: '管理员',
+        description: '拥有大部分管理权限',
+        createdAt: '2025-01-01T00:00:00',
+        updatedAt: '2025-01-01T00:00:00',
+    },
+    {
+        id: 3,
+        name: '普通用户',
+        description: '基础用户权限',
+        createdAt: '2025-01-01T00:00:00',
+        updatedAt: '2025-01-01T00:00:00',
+    },
+];
+
+// Mock菜单数据
+export interface MockMenu {
+    id: number;
+    parentId: number;
+    title: string;
+    name?: string;
+    path?: string;
+    component?: string;
+    perms?: string;
+    icon?: string;
+    sortOrder?: number;
+    menuType: 'M' | 'C' | 'F'; // M:目录, C:菜单, F:按钮
+    createdAt?: string;
+    updatedAt?: string;
+    children?: MockMenu[];
+}
+
+export const mockMenus: MockMenu[] = [
+    {
+        id: 1,
+        parentId: 0,
+        title: '系统管理',
+        menuType: 'M',
+        sortOrder: 1,
+        icon: 'SettingOutlined',
+    },
+    {
+        id: 2,
+        parentId: 1,
+        title: '用户管理',
+        name: 'users',
+        path: '/users',
+        menuType: 'C',
+        perms: 'user:list',
+        sortOrder: 1,
+        icon: 'UserOutlined',
+    },
+    {
+        id: 3,
+        parentId: 1,
+        title: '角色管理',
+        name: 'roles',
+        path: '/roles',
+        menuType: 'C',
+        perms: 'role:list',
+        sortOrder: 2,
+        icon: 'SafetyCertificateOutlined',
+    },
+    {
+        id: 4,
+        parentId: 2,
+        title: '新增用户',
+        menuType: 'F',
+        perms: 'user:add',
+        sortOrder: 1,
+    },
+    {
+        id: 5,
+        parentId: 2,
+        title: '编辑用户',
+        menuType: 'F',
+        perms: 'user:edit',
+        sortOrder: 2,
+    },
+    {
+        id: 6,
+        parentId: 2,
+        title: '删除用户',
+        menuType: 'F',
+        perms: 'user:delete',
+        sortOrder: 3,
+    },
+    {
+        id: 7,
+        parentId: 3,
+        title: '新增角色',
+        menuType: 'F',
+        perms: 'role:add',
+        sortOrder: 1,
+    },
+    {
+        id: 8,
+        parentId: 3,
+        title: '编辑角色',
+        menuType: 'F',
+        perms: 'role:edit',
+        sortOrder: 2,
+    },
+    {
+        id: 9,
+        parentId: 3,
+        title: '删除角色',
+        menuType: 'F',
+        perms: 'role:delete',
+        sortOrder: 3,
+    },
+    {
+        id: 10,
+        parentId: 3,
+        title: '分配权限',
+        menuType: 'F',
+        perms: 'role:assign',
+        sortOrder: 4,
+    },
+    {
+        id: 11,
+        parentId: 0,
+        title: '商品管理',
+        menuType: 'M',
+        sortOrder: 2,
+        icon: 'ShoppingOutlined',
+    },
+    {
+        id: 12,
+        parentId: 11,
+        title: '商品列表',
+        name: 'products',
+        path: '/products',
+        menuType: 'C',
+        perms: 'product:list',
+        sortOrder: 1,
+    },
+];
+
+// Mock角色权限关联数据 (roleId -> menuIds)
+export const mockRolePermissions: Record<number, number[]> = {
+    1: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12], // 超级管理员拥有所有权限
+    2: [1, 2, 3, 4, 5, 7, 8, 11, 12], // 管理员
+    3: [2, 11, 12], // 普通用户
+};
+

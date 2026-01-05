@@ -1,0 +1,35 @@
+spring:
+  application:
+    name: website
+
+  # Reactive Database (R2DBC)
+  r2dbc:
+    url: r2dbc:postgresql://localhost:5432/appdb
+    username: appuser
+    password: changeme
+    pool:
+      initial-size: 5
+      max-size: 10
+
+  # Reactive Redis
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      password: changeme
+      timeout: 3000ms
+
+  # Schema Init (Managed by Flyway in Infra)
+  # sql:
+  #   init:
+  #     mode: always
+  #     schema-locations: classpath:schema.sql
+
+server:
+  port: 8080
+
+logging:
+  level:
+    org.springframework.r2dbc: DEBUG
+    org.springframework.data.r2dbc: DEBUG
+    io.r2dbc.postgresql: INFO

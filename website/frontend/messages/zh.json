@@ -1,0 +1,58 @@
+{
+    "HomePage": {
+        "title": "萌宠日报 🐾",
+        "description": "每日份的可爱治愈。"
+    },
+    "News": {
+        "title": "最新毛孩子趣闻",
+        "readMore": "阅读故事",
+        "createPost": "发布新闻",
+        "backHome": "返回首页",
+        "create": {
+            "title": "大新闻! 📣",
+            "description": "分享最新的萌宠资讯。",
+            "form": {
+                "title": "标题",
+                "category": "分类",
+                "content": "内容",
+                "submit": "发布",
+                "back": "返回首页"
+            }
+        }
+    },
+    "Forum": {
+        "title": "铲屎官社区 💬",
+        "description": "吸猫撸狗，畅所欲言。",
+        "createPost": "发布帖子",
+        "backHome": "返回首页",
+        "create": {
+            "title": "发起讨论 🗨️",
+            "description": "开启一段友好的对话。",
+            "form": {
+                "title": "话题",
+                "category": "标签",
+                "content": "内容",
+                "submit": "发布",
+                "back": "返回社区"
+            }
+        },
+        "detail": {
+            "back": "返回社区",
+            "comments": "评论"
+        }
+    },
+    "Auth": {
+        "login": "登录",
+        "register": "注册",
+        "email": "邮箱地址",
+        "password": "密码",
+        "name": "昵称",
+        "confirmPassword": "确认密码",
+        "submitLogin": "立即登录",
+        "submitRegister": "立即注册",
+        "haveAccount": "已有账号？去登录",
+        "noAccount": "没有账号？去注册",
+        "welcomeBack": "欢迎回来! 👋",
+        "joinUs": "加入我们! 🐾"
+    }
+}

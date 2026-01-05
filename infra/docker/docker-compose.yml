@@ -1,0 +1,124 @@
+x-db-common: &db-common
+  image: postgres:15
+  restart: unless-stopped
+  labels:
+    - "org.springframework.boot.service-connection=postgres"
+  environment:
+    POSTGRES_DB: ${POSTGRES_DB:-appdb}
+    POSTGRES_USER: ${POSTGRES_USER:-appuser}
+    POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-changeme}
+    PGDATA: /var/lib/postgresql/data/pgdata
+  healthcheck:
+    test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-appuser} -d ${POSTGRES_DB:-appdb}"]
+    interval: 5s
+    timeout: 3s
+    retries: 5
+
+
+x-redis-common: &redis-common
+  image: redis:7-alpine
+  restart: unless-stopped
+  environment:
+    REDIS_PASSWORD: changeme  # 添加环境变量
+  command: redis-server --requirepass changeme
+  healthcheck:
+    test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+    interval: 5s
+    timeout: 3s
+    retries: 5
+
+x-flyway-common: &flyway-common
+  image: flyway/flyway:9
+  restart: "no"
+  labels:
+    - "org.springframework.boot.docker.compose.skip=true"
+  volumes:
+    - ../db/migration:/flyway/sql:ro
+  command: -connectRetries=60 migrate
+
+services:
+  db-dev:
+    <<: *db-common
+    profiles: ["dev"]  # 关键点：只在 dev profile 激活
+    container_name: ${CONTAINER_PREFIX:-webapp}_postgres_dev
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - db_data_dev:/var/lib/postgresql/data/pgdata
+    networks:
+      - app_network
+
+  redis-dev:
+    <<: *redis-common
+    profiles: ["dev"]
+    # 移除 service-connection label，使用 application.yaml 中的手动配置
+    container_name: ${CONTAINER_PREFIX:-webapp}_redis_dev
+    ports:
+      - "${REDIS_PORT:-6379}:6379" # 固定端口
+    volumes:
+      - redis_data_dev:/data
+    networks:
+      - app_network
+
+  flyway-dev:
+    <<: *flyway-common
+    profiles: ["dev"]
+    container_name: ${CONTAINER_PREFIX:-webapp}_flyway_dev
+    depends_on:
+      db-dev:
+        condition: service_healthy
+    environment:
+      FLYWAY_URL: jdbc:postgresql://db-dev:5432/${POSTGRES_DB:-appdb}
+      FLYWAY_USER: ${POSTGRES_USER:-appuser}
+      FLYWAY_PASSWORD: ${POSTGRES_PASSWORD:-changeme}
+      FLYWAY_LOCATIONS: filesystem:/flyway/sql
+    networks:
+      - app_network
+
+
+  db-test:
+    <<: *db-common
+    profiles: ["test"]
+    container_name: ${CONTAINER_PREFIX:-webapp}_postgres_test
+    ports:
+      - "5432"
+    tmpfs:
+      - /var/lib/postgresql/data
+    networks:
+      - app_network
+
+  redis-test:
+    <<: *redis-common
+    profiles: ["test"]
+    labels:
+      - "org.springframework.boot.service-connection=redis"
+    container_name: ${CONTAINER_PREFIX:-webapp}_redis_test
+    ports:
+      - "6379"
+    networks:
+      - app_network
+
+  flyway-test:
+    <<: *flyway-common
+    profiles: ["test"]
+    container_name: ${CONTAINER_PREFIX:-webapp}_flyway_test
+    depends_on:
+      db-test:
+        condition: service_healthy
+    environment:
+      FLYWAY_URL: jdbc:postgresql://db-test:5432/${POSTGRES_DB:-appdb}
+      FLYWAY_USER: ${POSTGRES_USER:-appuser}
+      FLYWAY_PASSWORD: ${POSTGRES_PASSWORD:-changeme}
+      FLYWAY_LOCATIONS: filesystem:/flyway/sql
+    networks:
+      - app_network
+
+volumes:
+  db_data_dev:
+    name: ${VOLUME_PREFIX:-webapp}_db_data_dev
+  redis_data_dev:
+    name: ${VOLUME_PREFIX:-webapp}_redis_data_dev
+
+networks:
+  app_network:
+    name: ${NETWORK_NAME:-webapp}_network
