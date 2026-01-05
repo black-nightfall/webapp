@@ -35,23 +35,31 @@ webapp/
 **新人必读**: 请先阅读 [QUICKSTART.md](./QUICKSTART.md)
 
 ```bash
-# 1. 启动基础设施（PostgreSQL + Redis）
-cd infra/docker
-./start-dev.sh
+# 1. 确保Docker Desktop运行中
+docker ps
 
-# 2A. 启动 Admin 后端
+# 2A. 启动 Admin 后端（自动启动PostgreSQL + Redis）
 ./gradlew :admin:bootRun
-# 访问: http://localhost:9090/admin
+# API: http://localhost:9090/admin/auth/login
+# 默认账户: superadmin / admin123
 
-# 2B. 启动 Website 后端
+# 2B. 启动 Admin 前端
+cd admin/frontend
+npm install
+npm run dev -- --mode mock  # Mock模式
+# 或
+npm run dev                 # 连接后端
+# 访问: http://localhost:5174
+
+# 3A. 启动 Website 后端（复用相同数据库）
 ./gradlew :website:bootRun
-# 访问: http://localhost:8080/api/news
+# API: http://localhost:8080/news
 
-# 3. 启动前端
+# 3B. 启动 Website 前端
 cd website/frontend
 npm install
 npm run dev
-# 访问: http://localhost:3000
+# 访问端口见控制台输出
 ```
 
 ## 📚 模块说明
@@ -71,6 +79,15 @@ npm run dev
 **端口**: `9090`  
 **上下文路径**: `/admin`
 
+**API路径示例**:
+- 登录: `POST /admin/auth/login`
+- 用户管理: `/admin/users`, `/admin/users/{id}`
+- 角色管理: `/admin/roles`, `/admin/roles/{id}`
+- 菜单管理: `/admin/menus`
+- 会话管理: `/admin/sessions/{username}`
+
+**Postman Collection**: `admin/src/main/resources/postman/Admin-Backend-API.postman_collection.json`
+
 ### Website 模块
 
 #### Backend (后端)
@@ -86,24 +103,23 @@ npm run dev
 - Modular Domain 架构（按功能模块划分）
 
 **端口**: `8080`  
-**路径示例**:
-- `GET /api/news` - 获取新闻列表
-- `GET /api/forum` - 获取论坛帖子
-- `POST /api/auth/login` - 用户登录
+**路径示例** (实际路径取决于Router配置):
+- `GET /news` - 获取新闻列表
+- `GET /forum` - 获取论坛帖子
 
 #### Frontend (前端)
 
 **技术栈**: Next.js 15 + React + TypeScript + Tailwind CSS
 
-**用途**: 面向用户的萌宠新闻和社区网站。
+**用途**: 面向用户的萌宠新闻和社区网站前端。
 
 **特性**:
 - Neubrutalism 设计风格（粗边框、硬阴影、高对比度）
-- 国际化支持（中/英）
-- 动画交互（Framer Motion）
-- 猫咪主题 UI 组件
 
-**端口**: `3000`  
+**端口**:
+- Admin前端: `5174` (Mock模式/Dev模式)
+- Website前端: 见package.json配置
+
 **文档**: [website/frontend/WORKFLOW_CN.md](./website/frontend/WORKFLOW_CN.md)
 
 ### Common 模块
@@ -209,10 +225,8 @@ npm run dev
 | 文档 | 描述 |
 |------|------|
 | [QUICKSTART.md](./QUICKSTART.md) | 快速开始指南（必读！） |
-| [infra/docker/README.md](./infra/docker/README.md) | Docker 环境配置详解 |
 | [website/frontend/WORKFLOW_CN.md](./website/frontend/WORKFLOW_CN.md) | 前端开发工作流 |
 | [website/frontend/DEVELOPMENT_CN.md](./website/frontend/DEVELOPMENT_CN.md) | 前端组件和样式指南 |
-| [admin/PASSWORD_UTIL_GUIDE.md](./admin/PASSWORD_UTIL_GUIDE.md) | 密码加密工具使用 |
 
 ## 🛠️ 技术栈总览
 

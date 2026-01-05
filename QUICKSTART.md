@@ -1,69 +1,70 @@
 # 🚀 快速开始指南
 
 ## 前置要求
-- Docker 和 Docker Compose 已安装
-- JDK 17+
-- Gradle 8.0+
+- Docker 和 Docker Compose 已安装并运行
+- Java 21 (推荐使用 [SDKMAN](https://sdkman.io/) 安装)
 
 ## 第一次运行
 
-### 1. 启动开发环境
+### 1. 环境准备
 
+本项目使用 **Spring Boot Docker Compose** 自动管理依赖服务（PostgreSQL + Redis）。**无需手动启动Docker容器**。
+
+确保 Docker Desktop 正在运行：
 ```bash
-# 进入 Docker 目录
-cd infra/docker
-
-# 启动开发环境容器
-./start-dev.sh
-
-# 等待容器完全启动（约 10 秒）
+docker ps  # 应该能够正常执行
 ```
 
-### 2. 运行应用
+### 2. 启动Admin后端
 
 ```bash
-# 返回项目根目录
-cd ../..
-
-# 运行应用（开发模式）
+# 在项目根目录执行
 ./gradlew :admin:bootRun
 
-# 或者使用环境变量方式
-export SPRING_PROFILES_ACTIVE=dev
-./gradlew :admin:bootRun
+# 应用启动时会自动：
+# 1. 拉取 PostgreSQL 和 Redis 镜像（首次运行）
+# 2. 启动容器
+# 3. 执行 Flyway 数据库迁移
+# 4. 启动 Spring Boot 应用
 ```
 
-### 3. 测试应用
+等待启动成功，控制台会显示：
+```
+Started ApiApplication in X.XXX seconds
+```
 
-访问: `http://localhost:9090/admin`
+### 3. 访问应用
 
-默认管理员账户:
-- 用户名: `admin`
+**Admin 后端 API**:
+- 登录: http://localhost:9090/admin/auth/login
+- 用户管理: http://localhost:9090/admin/users
+- 角色管理: http://localhost:9090/admin/roles
+
+**Admin 前端** (需单独启动):
+```bash
+cd admin/frontend
+npm install
+npm run dev -- --mode mock  # Mock模式，无需后端
+# 或
+npm run dev                 # 连接后端
+# 访问: http://localhost:5174
+```
+
+**默认管理员账户**:
+- 用户名: `superadmin`
 - 密码: `admin123`
 
 ## 运行测试
 
-### 1. 启动测试环境
-
 ```bash
-# 进入 Docker 目录
-cd infra/docker
-
-# 启动测试环境容器（使用不同的端口，不会与开发环境冲突）
-./start-test.sh
-```
-
-### 2. 执行测试
-
-```bash
-# 返回项目根目录
-cd ../..
-
-# 运行所有测试
+# 运行所有测试（会自动使用测试数据库）
 ./gradlew :admin:test
 
-# 运行特定测试
+# 运行特定测试类
 ./gradlew :admin:test --tests "com.night.admin.util.PasswordUtilTest"
+
+# 运行单个测试方法
+./gradlew :admin:test --tests "com.night.admin.util.PasswordUtilTest.测试密码加密"
 ```
 
 ## 环境管理
@@ -77,109 +78,70 @@ docker ps
 你应该看到类似这样的输出：
 
 ```
-CONTAINER ID   IMAGE           STATUS         PORTS                    NAMES
-abc123...      postgres:15     Up 2 minutes   0.0.0.0:5432->5432/tcp   webapp_postgres_dev
-def456...      redis:7-alpine  Up 2 minutes   0.0.0.0:6379->6379/tcp   webapp_redis_dev
+CONTAINER ID   IMAGE          STATUS         PORTS                    NAMES
+abc123...      postgres:16    Up 2 minutes   0.0.0.0:5432->5432/tcp   admin-postgres-1
+def456...      redis:7        Up 2 minutes   0.0.0.0:6379->6379/tcp   admin-redis-1
 ```
 
-### 停止环境
+### 停止容器
 
 ```bash
-# 停止开发环境
-cd infra/docker
-./stop-dev.sh
+# 停止所有容器（应用关闭时容器会自动停止）
+# 如需手动停止：
+docker stop admin-postgres-1 admin-redis-1
 
-# 停止测试环境
-./stop-test.sh
+# 移除容器
+docker rm admin-postgres-1 admin-redis-1
 ```
 
-### 同时运行开发和测试环境
+### 清理数据（重置数据库）
 
 ```bash
-# 在一个终端窗口
-cd infra/docker
-./start-dev.sh
+# ⚠️ 警告：这会删除所有数据！
+docker volume ls  # 查看volumes
+docker volume rm <volume_name>  # 删除对应的volume
 
-# 在另一个终端窗口
-cd infra/docker
-./start-test.sh
-
-# 验证两个环境都在运行
-docker ps
+# 重启应用会自动创建新的数据库
+./gradlew :admin:bootRun
 ```
-
-你应该看到 6 个容器（每个环境 3 个）：
-- `webapp_postgres_dev` (端口 5432)
-- `webapp_postgres_test` (端口 5433)
-- `webapp_redis_dev` (端口 6379)
-- `webapp_redis_test` (端口 6380)
-- `webapp_flyway_dev`
-- `webapp_flyway_test`
 
 ## 常见任务
 
 ### 查看日志
 
 ```bash
-# 开发环境日志
-docker-compose -f infra/docker/docker-compose.dev.yml logs -f
+# 查看容器日志
+docker logs -f admin-postgres-1
+docker logs -f admin-redis-1
 
-# 测试环境日志
-docker-compose -f infra/docker/docker-compose.test.yml logs -f
-
-# 只看数据库日志
-docker logs -f webapp_postgres_dev
+# 查看应用日志（在运行./gradlew :admin:bootRun的终端中）
 ```
 
 ### 连接数据库
 
 ```bash
-# 开发环境
-docker exec -it webapp_postgres_dev psql -U appuser -d appdb_dev
+# 使用Docker exec进入PostgreSQL
+docker exec -it admin-postgres-1 psql -U appuser -d appdb
 
-# 测试环境
-docker exec -it webapp_postgres_test psql -U appuser_test -d appdb_test
+# 或使用数据库客户端工具连接
+# Host: localhost
+# Port: 5432
+# Database: appdb
+# Username: appuser
+# Password: changeme
 ```
 
-### 重置数据库（清空所有数据）
+### 监控Redis
 
 ```bash
-# ⚠️ 警告：这会删除所有数据！
+# 进入Redis CLI
+docker exec -it admin-redis-1 redis-cli
 
-# 开发环境
-cd infra/docker
-./stop-dev.sh
-docker volume rm docker_db_dev_data docker_redis_dev_data
-./start-dev.sh
+# 查看所有keys
+> KEYS *
 
-# 测试环境
-./stop-test.sh
-docker volume rm docker_db_test_data docker_redis_test_data
-./start-test.sh
-```
-
-## 环境配置
-
-### 自定义端口
-
-如果默认端口已被占用，编辑 `.env.dev` 或 `.env.test` 文件：
-
-```bash
-cd infra/docker
-
-# 编辑开发环境配置
-nano .env.dev
-
-# 修改端口
-POSTGRES_PORT=5434  # 改为其他端口
-REDIS_PORT=6381     # 改为其他端口
-```
-
-然后重启容器：
-
-```bash
-./stop-dev.sh
-./start-dev.sh
+# 查看特定key
+> GET <key_name>
 ```
 
 ## 故障排查
@@ -190,6 +152,7 @@ REDIS_PORT=6381     # 改为其他端口
 # 查找占用端口的进程
 lsof -i :5432
 lsof -i :6379
+lsof -i :9090
 
 # 停止旧容器
 docker ps -a | grep postgres
@@ -199,38 +162,43 @@ docker rm -f <container_id>
 ### 问题：容器启动失败
 
 ```bash
-# 查看详细日志
-docker-compose -f infra/docker/docker-compose.dev.yml logs
+# 查看容器状态
+docker ps -a
 
-# 检查容器状态
-docker-compose -f infra/docker/docker-compose.dev.yml ps
+# 查看容器日志
+docker logs admin-postgres-1
+docker logs admin-redis-1
+
+# 检查Docker是否运行
+docker info
 ```
 
 ### 问题：数据库连接失败
 
 1. 检查容器是否运行：`docker ps`
-2. 检查端口是否正确
-3. 检查环境变量是否正确配置
-4. 查看应用日志
+2. 检查应用配置：`admin/src/main/resources/application.yaml`
+3. 查看应用启动日志
+4. 尝试手动连接数据库验证
 
-### 问题：测试连接到开发数据库
-
-确保在运行测试时使用 `test` profile：
+### 问题：Flyway迁移失败
 
 ```bash
-# 检查环境变量
-echo $SPRING_PROFILES_ACTIVE
+# 查看迁移脚本
+ls -la infra/db/migration/
 
-# 显式指定
-./gradlew :admin:test -Dspring.profiles.active=test
+# 检查数据库表
+docker exec -it admin-postgres-1 psql -U appuser -d appdb -c "\dt"
+
+# 查看Flyway历史
+docker exec -it admin-postgres-1 psql -U appuser -d appdb -c "SELECT * FROM flyway_schema_history;"
 ```
 
 ## 下一步
 
-- 阅读完整文档：[infra/docker/README.md](infra/docker/README.md)
+- 阅读完整项目文档：[README.md](./README.md)
 - 配置 IDE（IntelliJ IDEA / VS Code）
-- 设置 Git hooks
-- 配置 CI/CD
+- 导入 Postman collection: `admin/src/main/resources/postman/Admin-Backend-API.postman_collection.json`
+- 查看前端开发指南：[website/frontend/WORKFLOW_CN.md](./website/frontend/WORKFLOW_CN.md)
 
 ---
 
@@ -241,16 +209,16 @@ Website 模块是面向用户的新闻和论坛前端应用的后端 API，使�
 ### 1. 启动 Website 后端
 
 ```bash
-# 确保数据库和 Redis 已启动（复用 admin 的基础设施）
-cd infra/docker
-./start-dev.sh
+# Website模块复用相同的PostgreSQL和Redis
+# 确保Docker Desktop运行中
 
 # 启动 Website 应用
-cd ../..
 ./gradlew :website:bootRun
 ```
 
-访问: `http://localhost:8080/api/news`
+访问示例:
+- 新闻列表: `http://localhost:8080/news`
+- 论坛列表: `http://localhost:8080/forum`
 
 ### 2. 创建你的第一个 API 端点 (以 Products 为例)
 
@@ -410,11 +378,11 @@ class RouterConfig(
 # 重启应用
 ./gradlew :website:bootRun
 
-# 测试 API
-curl http://localhost:8080/api/products
+# 测试 API （实际路径取决于RouterConfig配置）
+curl http://localhost:8080/products
 
 # 创建产品
-curl -X POST http://localhost:8080/api/products \
+curl -X POST http://localhost:8080/products \
   -H "Content-Type: application/json" \
   -d '{"name":"猫粮","description":"营养丰富","price":99.99}'
 ```
@@ -456,6 +424,77 @@ curl -X POST http://localhost:8080/api/products \
 
 # 启动应用
 ./gradlew :website:bootRun
+```
+
+## 💡 开发提示
+
+### 热重载（DevTools）
+
+项目已配置Spring Boot DevTools，修改代码后自动重新编译：
+
+**IntelliJ IDEA配置**：
+1. `Preferences → Compiler` → ✅ `Build project automatically`
+2. `Cmd+Shift+A` → 搜索 `Registry` → ✅ `compiler.automake.allow.when.app.running`
+
+修改代码后保存，等待1-2秒，应用会自动重启（非常快）。
+
+### Postman测试
+
+导入 Postman collection:
+```
+admin/src/main/resources/postman/Admin-Backend-API.postman_collection.json
+```
+
+**使用方法**：
+1. 调用 Login 接口（自动保存token到变量）
+2. 其他接口自动使用该token进行认证
+
+### 前端开发
+
+**Admin前端**：
+```bash
+cd admin/frontend
+npm install
+npm run dev -- --mode mock  # Mock模式（不需要后端）
+npm run dev                 # Dev模式（连接后端API）
+# 访问: http://localhost:5174
+```
+
+**Website前端**：
+```bash
+cd website/frontend
+npm install
+npm run dev
+# 访问端口见控制台输出
+```
+
+## 🔧 常见问题
+
+### 登录403 Forbidden
+
+确保使用正确的账户：
+- 用户名：`superadmin` （不是 admin）
+- 密码：`admin123`
+- 路径：`POST http://localhost:9090/admin/auth/login`
+
+### 找不到API端点 (404)
+
+检查路径是否正确，Admin API路径已移除 `/api` 前缀：
+- ❌ 错误：`/admin/api/users/1`
+- ✅ 正确：`/admin/users/1`
+
+### Docker容器无法启动
+
+```bash
+# 检查Docker是否运行
+docker info
+
+# 查看更详细的错误
+docker logs admin-postgres-1
+
+# 清理并重启
+docker rm -f admin-postgres-1 admin-redis-1
+./gradlew :admin:bootRun  # 会重新创建容器
 ```
 
 ## 相关文档
