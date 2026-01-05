@@ -3,14 +3,19 @@
 > 后台管理系统前端 - React + TypeScript + Vite + Ant Design  
 > **架构模式**: 业界标准三层架构 (pages/features/services)
 
+> **📚 深入阅读**：本README为精简版快速指南。  
+> - 完整架构详解 → [ARCHITECTURE.md](./ARCHITECTURE.md)  
+> - 完整代码规范 → [CODING_STANDARDS.md](./CODING_STANDARDS.md)  
+> - AI专用提示 → [prompt.md](./prompt.md)
+
 ## 📋 目录
 
 - [项目概述](#项目概述)
 - [技术栈](#技术栈)
 - [快速开始](#快速开始)
-- [架构设计](#架构设计) ⭐ **重要**
+- [架构设计](#架构设计) ⭐ **重要** → [详见ARCHITECTURE.md](./ARCHITECTURE.md)
 - [目录结构](#目录结构)
-- [开发规范](#开发规范) ⭐ **AI必读**
+- [开发规范](#开发规范) ⭐ **AI必读** → [详见CODING_STANDARDS.md](./CODING_STANDARDS.md)
 - [常见开发场景](#常见开发场景)
 - [Mock API](#mock-api)
 - [构建与部署](#构建与部署)

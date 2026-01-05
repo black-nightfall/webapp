@@ -1,53 +1,142 @@
-# Common 模块
+# Common 模块 - 开发文档
 
-## 概述
+> 共享工具模块 - 异常处理 + DTO + 工具类 + 扩展函数
+
+## 📋 目录
+
+- [🤖 AI/Vibecode Context](#-aivibecode-context) ⭐ **AI必读优先**
+- [📦 模块概述](#-模块概述)
+- [🛠️ 技术栈](#️-技术栈)
+- [📁 模块结构](#-模块结构)
+- [💡 使用指南](#-使用指南)
+- [📚 相关文档](#-相关文档)
+
+---
+
+## 🤖 AI/Vibecode Context
+
+> **For AI Agents**: Common模块提供项目共享工具，所有模块都依赖此模块
+
+### 核心上下文
+1. **定位**: 跨模块共享的基础设施代码
+2. **语言**: Kotlin (与Java完全兼容)
+3. **依赖关系**: 
+   ```
+   common (被依赖)
+     ├─ admin (依赖common)
+     └─ website (依赖common)
+   ```
+
+### 代码生成规则
+- **✅ 必须**: 所有新增工具类都使用Kotlin编写
+- **✅ 必须**: 保持Java兼容性（避免Kotlin专有特性）
+- **✅ 必须**: 工具类使用`object`单例模式
+- **❌ 禁止**: 在common中依赖具体业务逻辑
+- **❌ 禁止**: 在common中引入Spring依赖（保持轻量）
+
+### 使用决策树
+
+```
+需要添加新代码到项目？
+├─ 是否被多个模块使用？
+│  ├─ 是 → 放入common模块
+│  │   ├─ 异常类？→ exception/
+│  │   ├─ DTO？→ dto/
+│  │   ├─ 工具方法？→ util/
+│  │   └─ Kotlin扩展？→ extension/
+│  │
+│  └─ 否 → 放入具体模块(admin/website)
+```
+
+### 代码模板
+
+**工具类示例**:
+```kotlin
+// common/src/main/kotlin/com/night/common/util/StringUtil.kt
+package com.night.common.util
+
+object StringUtil {
+    @JvmStatic
+    fun isValidEmail(email: String): Boolean {
+        return email.matches(Regex("^[A-Za-z0-9+_.-]+@(.+)$"))
+    }
+}
+
+// Java中使用
+StringUtil.isValidEmail("test@example.com");
+```
+
+---
+
+## 📦 模块概述
 
 `common` 模块是项目中的共享模块，包含所有子模块都可能使用的通用代码、工具类和配置。
 
-## 模块结构
+**核心功能**:
+- ✅ 统一异常体系
+- ✅ API响应格式封装
+- ✅ 通用工具类
+- ✅ Kotlin扩展函数
+- ✅ 常量定义
+
+---
+
+## 🛠️ 技术栈
+
+| 技术 | 版本 | 说明 |
+|------|------|------|
+| **Kotlin** | 2.2.21 | 主要开发语言 |
+| **Java Compatibility** | 21 | 完全兼容Java |
+
+---
+
+## 📁 模块结构
 
 ```
 common/
 ├── exception/           # 异常定义
-│   └── ApplicationException.kt
+│   ├── ApplicationException.kt
+│   ├── BusinessException.kt
+│   └── ResourceNotFoundException.kt
 ├── dto/                # 数据传输对象
-│   └── ApiResponse.kt
+│   ├── ApiResponse.kt       # ⭐ 核心：统一API响应
+│   ├── ErrorCode.kt
+│   └── PageResponse.kt
 ├── constant/           # 常量定义
-│   └── Constants.kt
+│   ├── HttpConstant.kt
+│   └── ErrorCodeConstant.kt
 ├── util/               # 工具类
-│   ├── CommonUtils.kt
-│   └── LoggerUtil.kt
+│   ├── DateTimeUtil.kt
+│   ├── StringUtil.kt
+│   └── ValidationUtil.kt
 └── extension/          # Kotlin 扩展函数
     └── Extensions.kt
 ```
 
-## 包含的功能
+---
 
-### 1. 异常处理 (`exception` 包)
+## 💡 使用指南
 
-统一的异常体系，便于错误处理和返回一致的错误响应。
+### 1. 异常处理
 
 **主要异常类**:
 - `ApplicationException` - 应用异常基类
 - `BusinessException` - 业务异常
 - `ResourceNotFoundException` - 资源不存在异常
-- `InvalidArgumentException` - 参数验证异常
-- `InternalErrorException` - 内部错误异常
 
 **使用示例**:
 ```kotlin
+// Kotlin
 throw BusinessException("USER_NOT_FOUND", "用户不存在")
+
+// Java
+throw new BusinessException("USER_NOT_FOUND", "用户不存在");
 ```
 
-### 2. 数据传输对象 (`dto` 包)
+### 2. API响应格式 ⭐ 核心
 
-**主要类**:
-- `ApiResponse<T>` - API 统一响应包装类，包含成功/失败统一处理
-- `ErrorResponse` - 错误响应
-- `PageRequest` - 分页请求
-- `PageResponse<T>` - 分页响应
+**ApiResponse<T>** - 统一响应包装类：
 
-**使用示例**:
 ```kotlin
 // 成功响应
 return ApiResponse.success(user, "User found successfully")
@@ -57,137 +146,75 @@ return ApiResponse.error("USER_NOT_FOUND", "用户不存在")
 
 // 分页响应
 val page = PageResponse.of(users, pageNo, pageSize, total)
+return ApiResponse.success(page)
 ```
 
-### 3. 常量定义 (`constant` 包)
-
-**包含的常量**:
-- `HttpConstant` - HTTP 相关常量
-- `ErrorCodeConstant` - 错误码常量
-- `BusinessConstant` - 业务相关常量
-- `SystemConstant` - 系统相关常量
-
-**使用示例**:
-```kotlin
-import com.night.common.constant.*
-
-val contentType = HttpConstant.CONTENT_TYPE_JSON
-val pageSize = BusinessConstant.DEFAULT_PAGE_SIZE
-```
-
-### 4. 工具类 (`util` 包)
-
-**主要工具**:
-- `DateTimeUtil` - 日期时间工具
-  - `now()` - 获取当前时间
-  - `formatToString()` - 格式化时间
-  - `parseFromString()` - 解析时间字符串
-
-- `StringUtil` - 字符串工具
-  - `isEmpty()` / `isNotEmpty()` - 判断空值
-  - `isBlank()` / `isNotBlank()` - 判断空白
-  - `camelToSnake()` / `snakeToCamel()` - 命名转换
-
-- `ValidationUtil` - 验证工具
-  - `isValidEmail()` - 邮箱验证
-  - `isValidPhoneNumber()` - 电话号码验证
-  - `isValidUrl()` - URL 验证
-
-- `LoggerUtil` - 日志工具
-  - 便捷的日志记录方式
-
-**使用示例**:
-```kotlin
-import com.night.common.util.*
-
-val now = DateTimeUtil.now()
-val email = "user@example.com"
-if (ValidationUtil.isValidEmail(email)) {
-    logger.info("Valid email: $email")
+**响应格式**:
+```json
+{
+  "success": true,
+  "data": {...},
+  "message": "操作成功",
+  "code": 200
 }
 ```
 
-### 5. 扩展函数 (`extension` 包)
+### 3. 工具类
 
-**String 扩展**:
-- `orEmpty()` / `orNull()` - 空值处理
-- `toIntOrNull()` / `toLongOrNull()` - 类型转换
-
-**Collection 扩展**:
-- `isNotEmpty()` / `isEmpty()` - 集合判断
-- `getOrEmpty()` - 获取空列表
-
-**LocalDateTime 扩展**:
-- `format()` - 格式化输出
-- `toStartOfDay()` / `toEndOfDay()` - 时间段转换
-
-**ApiResponse 扩展**:
-- `toSuccessResponse()` - 快速生成成功响应
-- `toErrorResponse()` - 快速生成错误响应
-
-**使用示例**:
+**DateTimeUtil** - 日期时间工具:
 ```kotlin
-import com.night.common.extension.*
+val now = DateTimeUtil.now()
+val formatted = DateTimeUtil.formatToString(date, "yyyy-MM-dd")
+```
 
+**StringUtil** - 字符串工具:
+```kotlin
+StringUtil.isEmpty(str)
+StringUtil.isValidEmail("user@example.com")
+StringUtil.camelToSnake("userName") // → "user_name"
+```
+
+**ValidationUtil** - 验证工具:
+```kotlin
+ValidationUtil.isValidEmail("test@example.com")
+ValidationUtil.isValidPhoneNumber("+86-138-0000-0000")
+ValidationUtil.isValidUrl("https://example.com")
+```
+
+### 4. Kotlin扩展函数
+
+**String扩展**:
+```kotlin
 val name: String? = getUserName()
 val displayName = name.orEmpty("Unknown")
+```
 
+**Collection扩展**:
+```kotlin
 val users: List<User>? = getUsers()
 if (users.isNotEmpty()) {
     logger.info("Found ${users.size} users")
 }
-
-val response = user.toSuccessResponse("User found")
 ```
 
-## 依赖关系
-
-```
-common (核心共享模块)
-  ├── admin (依赖 common)
-  └── website (依赖 common)
-```
-
-## 使用指南
-
-### 在 admin 或 website 中使用 common
-
-由于已经在 `build.gradle.kts` 中配置了依赖，可以直接导入使用：
-
+**LocalDateTime扩展**:
 ```kotlin
-import com.night.common.dto.ApiResponse
-import com.night.common.exception.BusinessException
-import com.night.common.util.DateTimeUtil
-import com.night.common.extension.*
-
-// 使用 DTO
-val response = ApiResponse.success(data, "Success")
-
-// 使用异常
-throw BusinessException("ERROR_CODE", "Error message")
-
-// 使用工具类
-val now = DateTimeUtil.now()
-
-// 使用扩展函数
-val value = nullableString.orEmpty("default")
+val now = LocalDateTime.now()
+val formatted = now.format("yyyy-MM-dd HH:mm:ss")
 ```
 
-## 最佳实践
+---
 
-1. **异常处理** - 优先使用 `common` 中定义的异常类，保持异常体系一致
-2. **DTO 复用** - 使用 `ApiResponse` 统一响应格式
-3. **常量管理** - 使用 `constant` 包中的常量而不是硬编码
-4. **工具函数** - 优先使用提供的工具函数和扩展函数
+## 📚 相关文档
 
-## 扩展建议
+### 依赖此模块的文档
+- **Admin模块**: [admin/README.md](../admin/README.md)
+- **Website模块**: [website/README.md](../website/README.md)
 
-未来可以添加以下内容到 `common` 模块：
+### 项目文档
+- **快速开始**: [QUICKSTART.md](../QUICKSTART.md)
+- **项目总览**: [README.md](../README.md)
 
-- **配置类** - 应用配置管理
-- **拦截器** - 日志、认证、授权拦截
-- **AOP 切面** - 统一的业务逻辑处理
-- **数据库访问层基类** - Repository 基类
-- **缓存工具** - Redis 缓存操作
-- **消息队列工具** - 消息发送/接收
+---
 
+**构建共享基础，服务所有模块！** 🛠️

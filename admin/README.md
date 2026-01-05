@@ -5,12 +5,78 @@
 
 ## 📋 目录
 
-- [⚡ 快速开始](#-快速开始) (New Joiner Start Here!)
-- [🤖 AI/Vibecode 指南](#-aivibecode-指南) (AI Context)
+- [🤖 AI/Vibecode Context](#-aivibecode-context) ⭐ **AI必读优先**
+- [⚡ 快速开始](#-快速开始)
 - [🛠️ 技术栈](#-技术栈)
 - [🏗️ 架构设计](#-架构设计)
 - [📁 目录结构](#-目录结构)
 - [📝 开发规范](#-开发规范)
+- [❓ 常见问题](#-常见问题)
+- [📚 相关文档](#-相关文档)
+
+---
+
+## 🤖 AI/Vibecode Context
+
+> **For AI Agents & Vibecode**: 阅读此部分以准确理解上下文和生成规则
+
+### 核心上下文
+1.  **架构风格**: **实用主义 DDD** (Pragmatic DDD)
+    -   **允许**: `ApplicationService` 直接调用 `Repository` 进行简单查询
+    -   **禁止**: `Controller` 直接调用 `Repository` 或 `DomainService`
+    -   **事务**: 统一在 `ApplicationService` 层管理 (`@Transactional`)
+2.  **配置源**:
+    -   **主要配置**: `src/main/resources/application.yaml`
+    -   **端口**: `9090`, **Context Path**: `/admin`
+    -   **依赖管理**: `../../gradle/libs.versions.toml` (Version Catalog)
+3.  **关键文件位置**:
+    -   Entity: `src/main/java/com/night/admin/domain/{module}/entity/`
+    -   Repository: `src/main/java/com/night/admin/domain/{module}/repository/`
+    -   Service (App): `src/main/java/com/night/admin/application/service/`
+
+### 代码生成规则
+- **✅ 必须**: 在 `ApplicationService` 添加 `@Transactional` 用于写操作
+- **✅ 必须**: 使用 DTO，严禁将 Entity 直接返回给 Controller
+- **✅ 必须**: 使用 Lombok (`@Data`, `@RequiredArgsConstructor`)
+- **❌ 禁止**: Controller 直接调用 Repository
+- **依赖引用**: 使用 Kotlin DSL (`build.gradle.kts`), 通过 `libs.xxxx` 引用
+
+### 决策树
+
+```
+ApplicationService需要访问数据？
+├─ 是否涉及复杂业务规则（>3行逻辑）？
+│  ├─ 是 → 调用 Domain Service
+│  │   示例: 创建用户（密码加密+唯一性校验）
+│  │         订单支付（扣减库存+积分计算）
+│  │
+│  └─ 否 → 直接用 Repository
+│      示例: 分页查询列表
+│            根据ID查询
+│            简单CRUD（无业务规则）
+```
+
+### API路径规范
+
+**Context Path**: `/admin` (在 application.yaml 配置)
+
+**完整路径示例**:
+- 登录: `POST /admin/auth/login`
+- 登出: `POST /admin/auth/logout`
+- 用户列表: `GET /admin/users`
+- 用户详情: `GET /admin/users/{id}`
+- 创建用户: `POST /admin/users`
+- 更新用户: `PUT /admin/users/{id}`
+- 删除用户: `DELETE /admin/users/{id}`
+- 角色管理: `/admin/roles`, `/admin/roles/{id}`
+- 菜单管理: `/admin/menus`
+- 会话管理: `/admin/sessions/{username}`
+
+**Postman Collection**: `admin/src/main/resources/postman/Admin-Backend-API.postman_collection.json`
+
+### 代码模板
+
+详见下方 [🤖 AI/Vibecode 指南](#aivibecode-指南) 章节的完整模板
 
 ---
 
@@ -45,7 +111,7 @@ Started ApiApplication in X.XXX seconds (process running on port 9090)
 # 登录测试
 curl -X POST http://localhost:9090/admin/auth/login \
   -H "Content-Type: application/json" \
-  -d '{"username":"admin","password":"admin123"}'
+  -d '{"username":"superadmin","password":"admin123"}'
 
 # 预期返回（包含token）
 {
@@ -71,7 +137,7 @@ xxx            redis:7        0.0.0.0:6379->6379/tcp
 **方式4: 访问前端**（完整验证）
 1. 启动前端：`cd frontend && npm run dev -- --mode mock`
 2. 访问：http://localhost:5173
-3. 使用 `admin/admin123` 登录
+3. 使用 `superadmin/admin123` 登录
 
 详见：`frontend/README.md`
 
@@ -536,9 +602,18 @@ ls -la ../infra/db/migration/
 ```
 
 ### Q6: ApplicationService应该调用Repository还是DomainService？
-参考 [决策树](#applicationservice访问数据决策树)：
+参考 [决策树](#决策树)：
 - 简单CRUD → Repository
 - 复杂业务（>3行逻辑）→ DomainService
+
+---
+
+## 📚 相关文档
+
+- **前端开发**: [admin/frontend/README.md](./frontend/README.md)
+- **快速上手**: [QUICKSTART.md](../QUICKSTART.md)
+- **API规范**: 参考Postman Collection或即将创建的API Standards文档
+- **项目总览**: [README.md](../README.md)
 
 ---
 
